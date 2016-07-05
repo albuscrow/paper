@@ -1,0 +1,149 @@
+\begin{thebibliography}{10}
+\expandafter\ifx\csname url\endcsname\relax
+  \def\url#1{\texttt{#1}}\fi
+\expandafter\ifx\csname urlprefix\endcsname\relax\def\urlprefix{URL }\fi
+\expandafter\ifx\csname href\endcsname\relax
+  \def\href#1#2{#2} \def\path#1{#1}\fi
+
+\bibitem{Cui15}
+Y.~Cui, J.~Feng, Gpu-based smooth free-form deformation with sharp feature
+  awareness, Computer Aided Geometric Design 35 (2015) 69--81.
+
+\bibitem{Sederberg86}
+T.~W. Sederberg, S.~R. Parry, {Free-Form Deformation of Solid Geometric
+  Models}, SIGGRAPH Comput. Graph. 20~(4) (1986) 151--160.
+
+\bibitem{Cui13}
+Y.~Cui, J.~Feng, {Real-time B-spline Free-Form Deformation via GPU
+  acceleration}, Computers \& Graphics 37~(1-2) (2013) 1--11.
+
+\bibitem{Cui14}
+Y.~Cui, J.~Feng, {Real-time accurate Free-Form Deformation in terms of
+  triangular B\'ezier surfaces}, Appl. Math. J. Chinese Univ. 29~(4) (2014)
+  455--467.
+
+\bibitem{Coquillart90}
+S.~Coquillart, \href{http://doi.acm.org/10.1145/97880.97900}{{Extended
+  Free-Form Deformation: A Sculpturing Tool for 3D Geometric Modeling}},
+  SIGGRAPH Comput. Graph. 24~(4) (1990) 187--196.
+\newblock \href {http://dx.doi.org/10.1145/97880.97900}
+  {\path{doi:10.1145/97880.97900}}.
+\newline\urlprefix\url{http://doi.acm.org/10.1145/97880.97900}
+
+\bibitem{Hui02}
+K.~Hui,
+  \href{http://www.sciencedirect.com/science/article/pii/S0010448501001324}{{Free-form
+  design using axial curve-pairs}}, Computer-Aided Design 34~(8) (2002) 583 --
+  595.
+\newblock \href {http://dx.doi.org/10.1016/S0010-4485(01)00132-4}
+  {\path{doi:10.1016/S0010-4485(01)00132-4}}.
+\newline\urlprefix\url{http://www.sciencedirect.com/science/article/pii/S0010448501001324}
+
+\bibitem{MacCracken96}
+R.~MacCracken, K.~I. Joy,
+  \href{http://doi.acm.org/10.1145/237170.237247}{{Free-Form Deformations with
+  Lattices of Arbitrary Topology}}, in: Proceedings of the 23rd Annual
+  Conference on Computer Graphics and Interactive Techniques, SIGGRAPH '96,
+  ACM, New York, NY, USA, 1996, pp. 181--188.
+\newblock \href {http://dx.doi.org/10.1145/237170.237247}
+  {\path{doi:10.1145/237170.237247}}.
+\newline\urlprefix\url{http://doi.acm.org/10.1145/237170.237247}
+
+\bibitem{McDonnel07}
+K.~T.~McDonnell, H.~Qin, X.~Zhao,
+  \href{http://cvc.cs.sunysb.edu/Publications/2007/TQ07}{{PB-FFD: A Point-based
+  Technique for Free-Form Deformation}}, Journal of Graphics Tools 12~(3)
+  (2007) 25--41.
+\newline\urlprefix\url{http://cvc.cs.sunysb.edu/Publications/2007/TQ07}
+
+\bibitem{Xu13}
+G.~Xu, K.-C. Hui, W.-B. Ge, G.-Z. Wang,
+  \href{http://www.sciencedirect.com/science/article/pii/S001044851200187X}{{Direct
+  manipulation of free-form deformation using curve-pairs}}, Computer-Aided
+  Design 45~(3) (2013) 605 -- 614.
+\newblock \href {http://dx.doi.org/10.1016/j.cad.2012.09.004}
+  {\path{doi:10.1016/j.cad.2012.09.004}}.
+\newline\urlprefix\url{http://www.sciencedirect.com/science/article/pii/S001044851200187X}
+
+\bibitem{Gain08}
+J.~Gain, D.~Bechmann, {A Survey of Spatial Deformation from a User-Centered
+  Perspective}, ACM Trans. Graph. 27~(4) (2008) 107:1--107:21.
+
+\bibitem{Gain99}
+J.~E. Gain, N.~A. Dodgson, {Adaptive Refinement and Decimation under Free-Form
+  Deformation}, Eurographics UK '99, Cambridge 17 (1999) 13--15.
+
+\bibitem{Griessmair89}
+J.~Griessmair, W.~Purgathofer, {Deformation of Solids with Trivariate
+  B-Splines}, in: W.~S. FRA~Hopgood (Ed.), Proceedings of Eurographics, 1989,
+  pp. 137--148.
+
+\bibitem{Parry86}
+S.~R. Parry, {Free-Form Deformation in a Constructive Solid Geometry Modeling
+  System}, Ph.D. thesis, Brigham Young University, Provo, UT, USA, uMI order
+  no. GAX86-16254 (1986).
+
+\bibitem{Feng98}
+J.~Feng, P.-A. Heng, T.-T. Wong, {Accurate B-spline Free-Form Deformation of
+  Polygonal Objects}, J. Graph. Tools 3~(3) (1998) 11--27.
+
+\bibitem{Feng02}
+J.~Feng, T.~Nishita, X.~Jin, Q.~Peng, {B-spline free-form deformation of
+  polygonal object as trimmed B\'ezier surfaces}, The Visual Computer 18 (2002)
+  493--510, 10.1007/s00371-002-0171-1.
+
+\bibitem{Feng00}
+J.~Feng, Q.~Peng, {Accelerating Accurate B-spline Free-Form Deformation of
+  Polygonal Objects}, J. Graph. Tools 5~(1) (2000) 1--8.
+
+\bibitem{Chua00}
+C.~Chua, U.~Neumann, {Hardware-Accelerated Free-Form Deformation}, in:
+  Proceedings of the ACM SIGGRAPH/EUROGRAPHICS workshop on Graphics hardware,
+  HWWS '00, ACM, New York, NY, USA, 2000, pp. 33--39.
+
+\bibitem{Schein06}
+S.~Schein, G.~Elber, {Real-time Free-form Deformation using Programmable
+  Hardwares}, International Journal of Shape Modeling 12 (2006) 179 -- 192.
+
+\bibitem{Jung11}
+Y.~Jung, H.~Graf, J.~Behr, A.~Kuijper, {Mesh Deformations in X3D via CUDA with
+  Freeform Deformation Lattices}, in: R.~Shumaker (Ed.), Virtual and Mixed
+  Reality - Systems and Applications, Vol. 6774 of Lecture Notes in Computer
+  Science, Springer Berlin Heidelberg, 2011, pp. 343--351.
+
+\bibitem{Hahmann12}
+S.~Hahmann, G.-P. Bonneau, S.~Barbier, G.~Elber, H.~Hagen, {Volume-preserving
+  FFD for programmable graphics hardware}, The Visual Computer 28 (2012)
+  231--245, 10.1007/s00371-011-0608-5.
+
+\bibitem{Liu14}
+S.~Liu, A.~Jacobson, Y.~Gingold, {Skinning Cubic B\'ezier Splines and
+  Catmull-Clark Subdivision Surfaces}, ACM Transactions on Graphics (TOG)
+  33~(6).
+
+\bibitem{Vlachos01}
+A.~Vlachos, J.~Peters, C.~Boyd, J.~L. Mitchell,
+  \href{http://doi.acm.org/10.1145/364338.364387}{{Curved PN Triangles}}, in:
+  Proceedings of the 2001 Symposium on Interactive 3D Graphics, I3D '01, ACM,
+  New York, NY, USA, 2001, pp. 159--166.
+\newblock \href {http://dx.doi.org/10.1145/364338.364387}
+  {\path{doi:10.1145/364338.364387}}.
+\newline\urlprefix\url{http://doi.acm.org/10.1145/364338.364387}
+
+\bibitem{Boubekeur08}
+T.~Boubekeur, M.~Alexa,
+  \href{http://doi.acm.org/10.1145/1409060.1409094}{{Phong Tessellation}}, ACM
+  Trans. Graph. 27~(5) (2008) 141:1--141:5.
+\newblock \href {http://dx.doi.org/10.1145/1409060.1409094}
+  {\path{doi:10.1145/1409060.1409094}}.
+\newline\urlprefix\url{http://doi.acm.org/10.1145/1409060.1409094}
+
+\bibitem{Farin02}
+G.~Farin, {Curves and Surfaces for CAGD: A Practical Guide}, 5th Edition,
+  Morgan Kaufmann Publishers Inc., San Francisco, CA, USA, 2002.
+
+\bibitem{cublas}
+NVIDIA, {cuBLAS}, nvidia developer
+  zone.\url{https://developer.nvidia.com/cublas}.
+
+\end{thebibliography}

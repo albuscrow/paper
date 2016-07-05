@@ -1,0 +1,1695 @@
+\documentclass[3p]{elsarticle}
+
+\usepackage{lineno,hyperref}
+\modulolinenumbers[5]
+
+\usepackage{amsmath, amssymb}
+\usepackage[bbgreekl]{mathbbol}
+\usepackage{subfigure}
+\usepackage{wrapfig}
+\usepackage{enumerate}
+\usepackage{bm}
+\usepackage{color}
+\usepackage{multirow}
+
+\journal{Computer Aided Geometric Design}
+
+%%%%%%%%%%%%%%%%%%%%%%%
+%% Elsevier bibliography styles
+%%%%%%%%%%%%%%%%%%%%%%%
+%% To change the style, put a % in front of the second line of the current style and
+%% remove the % from the second line of the style you would like to use.
+%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Numbered
+%\bibliographystyle{model1-num-names}
+
+%% Numbered without titles
+%\bibliographystyle{model1a-num-names}
+
+%% Harvard
+%\bibliographystyle{model2-names.bst}\biboptions{authoryear}
+
+%% Vancouver numbered
+%\usepackage{numcompress}\bibliographystyle{model3-num-names}
+
+%% Vancouver name/year
+%\usepackage{numcompress}\bibliographystyle{model4-names}\biboptions{authoryear}
+
+%% APA style
+%\bibliographystyle{model5-names}\biboptions{authoryear}
+
+%% AMA style
+%\usepackage{numcompress}\bibliographystyle{model6-num-names}
+
+%% `Elsevier LaTeX' style
+\bibliographystyle{elsarticle-num}
+%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{GPU-based Smooth Free-Form Deformation with Sharp Feature Awareness}
+%\tnotetext[mytitlenote]{Fully documented templates are available in the elsarticle package on \href{http://www.ctan.org/tex-archive/macros/latex/contrib/elsarticle}{CTAN}.}
+
+%% Group authors per affiliation:
+%\author{Elsevier\fnref{myfootnote}}
+%\address{Radarweg 29, Amsterdam}
+%\fntext[myfootnote]{Since 1880.}
+
+%% or include affiliations in footnotes:
+%\author[mymainaddress,mysecondaryaddress]{Elsevier Inc}
+%\ead[url]{www.elsevier.com}
+
+%\author[mysecondaryaddress]{Global Customer Service\corref{mycorrespondingauthor}}
+%\cortext[mycorrespondingauthor]{Corresponding author}
+%\ead{support@elsevier.com}
+
+%\address[mymainaddress]{1600 John F Kennedy Boulevard, Philadelphia}
+%\address[mysecondaryaddress]{360 Park Avenue South, New York}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\author[cad-lab]{Yuanmin Cui}
+%%\ead[url]{www.elsevier.com}
+
+%\author[cad-lab]{Jieqing Feng\corref{mycorrespondingauthor}}
+%\cortext[mycorrespondingauthor]{Corresponding author}
+%\ead{jqfeng@cad.zju.edu.cn}
+
+%\address[cad-lab]{State Key Lab of CAD\&CG, Zhejiang University, China}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{abstract}
+In an accurate free-form deformation of a polygonal object, only the geometry, \textcolor{red}{e.g.}, triangles, is
+deformed as triangular B\'ezier patches or trimmed tensor product B\'ezier patches; the related normal field is not
+considered. Thus, the geometry appearance and shading of the deformed object are typically not smooth. In this paper,
+both the geometry and normal of a polygonal object are simultaneously considered in the framework of accurate free-form
+deformation. First, each triangle and its normal field are deformed as two cubic triangular B\'ezier patches. Then, the
+deformed \textcolor{red}{mesh} is locally adjusted to tone the smoothness of the geometry appearance according to the
+deformed normal field. The deformed normal field is adjusted accordingly. As a result, a smooth free-form deformation
+with visually smooth geometry and shading is obtained. Furthermore, the sharp features in the polygonal object can be
+preserved. Because the deformed \textcolor{red}{mesh} and normal field adjustments are local operations, all of the
+above computations can be performed in parallel on a GPU. The experimental results show that the method can deform a
+complex polygonal object as a smooth object in real time while preserving sharp features.
+\end{abstract}
+
+\begin{keyword}
+%\texttt{elsarticle.cls}\sep \LaTeX\sep Elsevier \sep template
+smooth FFD\sep sharp feature preserving\sep GPU
+%\MSC[2010] 00-01\sep  99-00
+\end{keyword}
+
+\end{frontmatter}
+
+\linenumbers
+
+\section{Introduction}
+
+Free-form deformation (FFD) is a prevalent shape manipulation and shape animation method in computer graphics and
+geometric modeling~\cite{Sederberg86}. Classic FFD is conducted on the sampled points of the geometric model. However,
+the approach tends to produce an aliased deformation result when using a low sampling density.
+
+As an alternative, accurate FFD~\cite{Feng98, Feng02, Feng00} deforms the planar polygons as a set of triangular
+B\'ezier patches or trimmed tensor-product B\'ezier patches based on the functional composition of Bernstein
+polynomials~ \cite{DeRose88, DeRose93}. The deformation result is accurate for polygonal \textcolor{red}{objects} in
+theory. The accurate FFD considers only the geometry of the original model, excluding its normal field. As a result, the
+deformed object is only $G^0$ continuous for its geometry. Its geometric appearance (e.g., silhouettes and the common
+edge of two patches) and shading are not smooth because the normal field is $G^{-1}$ continuous, which is derived from
+the definition of the related B\'ezier patches.
+
+In mathematics, the normal is a differential attribute that is determined by the geometry of the surface. In many
+graphics applications, the geometry and normal of a polygonal object are independently defined, whereby each vertex is
+equipped with one or more normals. In general, the independent normal is an approximation of the potentially true
+normal. In this manner, the smooth shading effect can be achieved at a low computational cost. The sharp features, such
+as sharp edges and corners, can also be preserved by assigning several normals to one vertex. For example, Phong shading
+can achieve smooth shading at a low computational cost via linear normal interpolation across a triangle. To alleviate
+the unsmooth silhouette problem in Phong shading, the PN-triangle~\cite{Vlachos01} method and Phong
+tessellation~\cite{Boubekeur08} method alter the linear geometry of a triangle as a curved geometry according to the
+related normal field.
+
+In this paper, a new smooth FFD with sharp feature awareness is proposed for polygonal objects in the framework of
+accurate FFD, where both the geometry and normal are simultaneously considered. The deformations of the linear geometry
+(triangle) and linear normal field defined on it are approximated as two cubic triangular B\'ezier surfaces for
+efficiency. As a result, the geometry appearance and shading of the deformed objects are visually plausible smooth, and
+the sharp features can also be well preserved. Figure~\ref{fig:all_ffd} shows examples of various FFD results. The main
+contributions in the proposed method are as follows:
+
+\begin{itemize}
+	\item Both the geometry and its normal are considered in the framework of accurate FFD.
+	\item The deformed object has a visually plausible $G^1$ geometry and $G^0$ normal field across a smooth edge, and a
+		$G^0$ geometry and $G^{-1}$ normal field across a sharp edge.
+	\item All of the computations are local and can be implemented fully in parallel on a GPU.
+\end{itemize}
+
+\begin{figure}[htb]
+	\centering
+	\subfigure[Flat shading]{\includegraphics[height=0.11\textheight]{pic/all_ffd_1.png}}
+	\subfigure[Phong shading]{\includegraphics[height=0.11\textheight]{pic/all_ffd_2.png}}
+	\subfigure[Classic FFD]{\includegraphics[height=0.10\textheight]{pic/all_ffd_3.png}}
+	\subfigure[Accurate FFD]{\includegraphics[height=0.10\textheight]{pic/all_ffd_4.png}}
+	\subfigure[Smooth FFD]{\includegraphics[height=0.10\textheight]{pic/all_ffd_5.png}}
+	\caption{Examples of classic FFD, accurate FFD and smooth FFD}
+	\label{fig:all_ffd}
+\end{figure}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Related Work}\label{sec:related}
+
+FFD, which was first proposed by Sederberg and Parry~\cite{Sederberg86}, is an intuitive model manipulation and soft
+object animation method.
+%It is independent of the geometric representation of the underlying object. FFD is widely used
+%in computer animation and geometric modeling.
+The main concept of FFD is to embed the object into an intermediate space,
+e.g., a B\'ezier volume. Users first edit the shape of the intermediate space; then, the space deformation is
+transferred to the embedded object. There are many successive studies regarding FFD. Most of these studies focus on
+improving the interactive means of FFD \cite{Coquillart90, Hui02, MacCracken96, McDonnel07, Xu13}. Gain and
+Bechmann~\cite{Gain08} provided a detailed survey of these methods.
+
+Traditional FFD and its extensions deform the sampled vertices of the model. Thus, the quality of the deformation result
+depends on the sampling density of the vertex. As a solution to the sampling problem, the adaptive upsampling approaches
+\cite{Gain99, Griessmair89, Parry86} are more efficient than the naive uniform upsampling approach. Adaptive upsampling
+approaches consider the polygon size or surface curvature and upsample the model if necessary. Adaptive approaches
+cannot handle certain special or pathological cases well.
+
+Accurate FFD, which was proposed by Feng et al.~\cite{Feng98, Feng02, Feng00}, is an alternative approach to solving the
+sampling problem. However, it is computationally intensive, and it also consumes considerable bandwidth, i.e.,
+transferring a large amount of data from the CPU to the GPU after the intensive computations are performed on the CPU.
+Thus, the algorithms are not interactive or performed in real time in practical applications.
+
+%Accurate FFD, which was proposed by Feng et al.~\cite{Feng98, Feng00, Feng02}, is an alternative approach to solving the
+%sampling problem. It deforms each planar polygon of the model as a B\'ezier patch, e.g., triangular B\'ezier patch or
+%trimmed tensor product B\'ezier patch, which is the precise deformation result of the polygonal object. Accurate FFD is
+%computationally intensive, and it also consumes considerable bandwidth, thus transferring a large amount of data from
+%the CPU to GPU after the intensive computations are performed on the CPU. Thus, the algorithms are not interactive or
+%performed in real time in practical applications.
+
+In the recent years, GPUs have been widely adopted for FFD implementations due to their tremendous parallel computing
+power. Chua et al.~\cite{Chua00} proposed an OpenGL-oriented hardware evaluator sub-system to accelerate FFD
+evaluations. However, none of the GPU vendors integrate this type of dedicated sub-system into their GPUs. In contrast,
+GPUs have evolved into general-purpose many-core processors. Schein et al.~\cite{Schein06} implemented a GPU-accelerated
+FFD using the NVIDIA CG language. However, many GPU programming skills are required to overcome the GPU pipeline
+limitations, which limits its application. Jung et al.~\cite{Jung11} achieved the same goal using NVIDIA CUDA and
+embedded it to the X3D system. Hahmann et al.~\cite{Hahmann12} proposed a GPU-based, volume-preserving FFD. They
+employed the multilinear property of volume constraint and derived an explicit solution. The GPU acceleration component
+implemented by CUDA is 6.5-times faster than its CPU counterpart.
+
+Cui et al.~\cite{Cui13, Cui14} proposed GPU-based accurate FFD, the results of which are represented in terms of trimmed
+tensor product B\'ezier patches or triangular B\'ezier patches. They are sufficiently efficient to meet the real-time or
+interactive demands of large-scale models. However, the deformation is only performed on the geometry, without
+considering the normal of the model. The actual normal of the resulting B\'ezier patch is adopted for rendering. Due to
+the piecewise linear continuity of the polygonal object, the deformed object is only $G^0$ continuous. As a result, both
+the geometric appearance (e.g., silhouettes and edges) and shading effect are unsmooth. The PN-triangle
+method~\cite{Vlachos01} decouples the geometry and normal information of a polygonal object to achieve a superior
+shading effect. The method adopts cubic and quadratic triangular B\'ezier surfaces to represent the geometry and normal,
+respectively, to achieve plausible smooth geometry and shading. Phong tessellation \cite{Boubekeur08} uses scalar tags
+proposed by Boubekeur et al.~\cite{Boubekeur05} to solve the sharp edge problem. The decoupled approaches inspired us to
+propose a novel method to address the above smoothness problem in the accurate FFD of polygonal objects.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Overview of Accurate FFD in Terms of Triangular B\'ezier Patches}
+
+The GPU-based accurate FFDs proposed in the papers~\cite{Cui13, Cui14} adopt trimmed tensor product B\'ezier patches and
+triangular B\'ezier patches as the deformation result, respectively. Because the triangular B\'ezier patch is more
+closely related to the accurate FFD of a triangular mesh and because its computation is more efficient on a GPU
+\cite{Cui14}, we adopt the framework of accurate FFD using triangular B\'ezier patches~\cite{Cui14, Feng98, Feng00}.
+Some basic \textcolor{red}{notation is} introduced below.
+
+$\mathbf R(u,v,w)$ is a B-spline volume of degree $n_u\times n_v\times n_w$ with $m_u$, $m_v$ and $m_w$ control
+points along the $u$, $v$ and $w$ directions, respectively:
+\begin{equation}
+	\footnotesize
+	{\mathbf R}(u,v,w) 
+	= \sum_{i=0}^{m_u-1}\sum_{j=0}^{m_v-1}\sum_{k=0}^{m_w-1} {\mathbf
+	R}_{ijk}N_{i,n_u}(u)N_{j,n_v}(v)N_{k,n_w}(w)
+	\label{equ:Ruvw}
+\end{equation}
+
+\noindent where $\{\mathbf R_{ijk}\}_{i=0,\hspace{6 pt} j=0,\hspace{8 pt} k=0}^{m_u-1,m_v-1,m_w-1}$ are the control
+points\textcolor{red}{,} $\{N_{i,n_u}(u)\}_{i=0}^{m_u-1}$, $\{N_{j,n_v}(v)\}_{j=0}^{m_v-1}$ and
+$\{N_{k,n_w}(w)\}_{k=0}^{m_w-1}$ are normalized B-spline basis functions\textcolor{red}{,} and
+$\{u_i\}^{n_u+m_u}_{i=0}$, $\{v_i\}^{n_v+m_v}_{j=0}$ and $\{w_k\}^{n_k+m_k}_{k=0}$ are the knot vectors along the $u$,
+$v$ and $w$ directions, respectively.  Every \textcolor{red}{three-dimensional} region $[u_i, u_{i+1}] \times [v_j,
+v_{j+1}] \times [w_k, w_{k+1}]$ is called a knot box, where $n_u\leq i < m_u$, $n_v\leq j < m_v$ and $n_w\leq k < m_w$,
+respectively.
+
+As described in \cite{Feng98, Feng00, Cui14}, each polygon of the model is first clipped against the knot boxes such
+that the generated sub-polygons lie inside of a knot box. Second, the generated sub-polygons are triangulated. The
+accurate FFD of such a sub-triangle in a knot box governed by $\mathbf R(u,v,w)$ is a triangular B\'ezier patch
+\cite{Feng98, Feng00}, whose degree is $n=n_u+n_v+n_w$. Let the triangular B\'ezier patch be denoted as ${\mathbf
+P}(u,v,w)$:
+
+\begin{equation}
+	\footnotesize
+	{\mathbf P}(u,v,w)
+	= \sum_{\substack{i+j+k=n \\ 0\leq i,j,k\leq n}} {\mathbf P}_{ijk}B^n_{ijk}(u,v,w), \hspace{8 pt} u,v,w\ge0,
+		\hspace{8 pt}u+v+w=1
+	\label{equ:Puvw}
+\end{equation}
+
+\noindent where $\{B_{ijk}^n(u,v,w)=\frac{n!}{i!j!k!}u^iv^jw^k \mid i+j+k=n\}$ are the Bernstein basis functions
+defined on a 2D simplex, \textit{i.e.}, a triangle. Its control points are $\{\mathbf P_{ijk} \mid i+j+k=n\}$, which
+can be efficiently computed via polynomial interpolations.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Smooth FFD with Sharp Feature Awareness}
+
+The input of the proposed method is a polygonal mesh with vertex, vertex normal and face information. Each vertex has
+one or more normals. A vertex with only one normal is called a ``smooth vertex'', and a vertex with multiple normals is
+called a ``sharp vertex''. An edge with two smooth end vertices is called a ``smooth edge'', and an edge with at least one
+sharp end vertex is called a ``sharp edge''.
+
+
+\subsection{Fitting deformed normal field as triangular B\'ezier patches}
+\label{sec:normal_fitting}
+
+In the previous accurate FFD method~\cite{Cui13, Cui14}, the triangles of the polygonal mesh are piecewise linear, the
+corresponding triangular B\'ezier patches are $G^0$ continuous, and its normal field is discontinuous, i.e., $G^{-1}$
+%continuous. As a result, the shading effect is unsmooth if the actual normals are adopted to render the triangular
+%B\'ezier patches (Figure~\ref{fig:all_ffd}(d)). To achieve a smooth shading result, the deformed geometry should be
+continuous. As a result, \textcolor{red}{the shading effect is unsmooth} (Figure~\ref{fig:all_ffd}(d)). To achieve a
+smooth shading result, the deformed geometry should be equipped with a $G^0$ and $G^{-1}$ continuous normal field at a
+smooth edge and sharp edge, respectively, in the accurate FFD framework.
+
+The normal field generation is formulated as a constrained fitting problem, where the fitted triangular B\'ezier patch
+should pass the constraint normals along the boundary curves. Such comstrained problems are common in spline modeling,
+for example, Liu et al. \cite{Liu14} use cubic B\'ezier spline constrainted fitting to calculate deformed cubic B\'ezier
+splines. As illustrated in Figure ~\ref{fig:normal_fitting}(a), the orange normals denote the constraint normals,
+whereas the blue normals denote the fitting normals on the original object.
+%The constraint normal and fitting normal at the corner coincide. For clarity, the constraint normal and fitting normals
+%at the corner are offset from one another.
+If the degree of the adopted triangular B\'ezier patch is $k$, the numbers of constraint and fitting normals are $3k$
+and $m=(n+1)(n+2)/2$, respectively, where $n=n_u+n_v+n_w$. In this paper, the degree of the normal triangular B\'ezier
+patch is 3, which provides flexiblity and feasiblity for practical applications. All sampled normals on the deformed
+object can be obtained by deforming the sampled normals from the linear normal field defined on the
+triangle~\cite{Gain99}, which can be formulated as follows:
+
+\begin{equation}
+	\footnotesize
+	\mathbf N_{\bar X}=(\mathbf J \bm\cdot\mathbf {\bar J}^*)^{\mathrm T}\mathbf N_X
+	\label{equ:gain_normal}
+\end{equation}
+
+\noindent where $\mathbf N_X$ is the original normal, $\mathbf N_{\bar X}$ is the deformed normal, and $\mathbf J$ is
+the Jacobian of the embedding function.
+%According to the method~\cite{Feng98, Feng00}, the embedding function is a linear function.
+$\mathbf {\bar J}$ is the Jacobian of the deformation function $\mathbf R(u, v, w)$ in
+Equation~\ref{equ:Ruvw}.
+
+\begin{wrapfigure}{r}{0.2\textwidth}
+%\begin{figure}[htb]
+	\centering
+	\subfigure[The fitting and constraint normals sampled on the triangle]
+		{\includegraphics[width=\linewidth]{pic/normal_fitting_1.png}}
+	\subfigure[The deformed normals of (a) attached on the geometry in accurate FFD]
+		{\includegraphics[width=\linewidth]{pic/normal_fitting_2.png}}
+	\subfigure[The control points distribution of the cubic triangular B\'ezier patch for the constrained fitted normal field]
+		{\includegraphics[width=\linewidth]{pic/normal_fitting_3.png}}
+	\caption{Constrained normal fitting using cubic triangular B\'ezier patch}
+	\label{fig:normal_fitting}
+%\end{figure}
+\end{wrapfigure}
+
+The above constrained normal field fitting can be formulated as follows. First, the $m$ fitting normals can be expressed as
+
+\begin{equation}
+	\footnotesize
+	%\small
+	%\footnotesize
+	%\scriptsize
+		\left(
+		\begin{array}{cccc}
+		B^3_{300}(U_1) & B^3_{210}(U_1) & \cdots & B^3_{003}(U_1) \\
+		B^3_{300}(U_2) & B^3_{210}(U_2) & \cdots & B^3_{003}(U_2) \\
+		\vdots & \vdots & \ddots & \vdots \\
+		B^3_{300}(U_m) & B^3_{210}(U_m) & \cdots & B^3_{003}(U_m) \\
+		\end{array}
+		\right)
+		\left(
+		\begin{array}{c}
+		\mathbf P_0 \\
+		\mathbf P_1 \\
+		\vdots \\
+		\mathbf P_9
+		\end{array}
+		\right)
+		=
+		\left(
+		\begin{array}{c}
+		\mathbf Q_1 \\
+		\mathbf Q_2 \\
+		\vdots \\
+		\mathbf Q_m
+		\end{array}
+		\right)
+	\label{equ:BPQ}
+\end{equation}
+
+\noindent where $\{U_k=(u_k,v_k,w_k)\}^m_{k=1}$ are the barycentric parameters of sampling normals, which are uniformly
+distributed in the triangular domain; $\{\mathbf P_k\}_{k=0}^9$ are the control points of the cubic triangular B\'ezier
+patch for the normal field; and $\{\mathbf Q_k\}_{k=1}^m$ are the sampling points corresponding to
+$\{U_k=(u_k,v_k,w_k)\}^m_{k=1}$. Equation~\ref{equ:BPQ} can be rewritten as
+
+\begin{equation}
+	\footnotesize
+	\mathbf M \mathbf P=\mathbf Q
+\end{equation}
+
+Then, the $3k(k=3)$ constraint normals can be expressed as:
+
+\begin{equation}
+	\footnotesize
+	%\small
+	%\scriptsize
+		\left(
+		\begin{array}{cccc}
+		B^3_{300}(U_{s_1}) & B^3_{210}(U_{s_1}) & \cdots & B^3_{003}(U_{s_1}) \\
+		B^3_{300}(U_{s_2}) & B^3_{210}(U_{s_2}) & \cdots & B^3_{003}(U_{s_2}) \\
+		\vdots & \vdots & \ddots & \vdots \\
+		B^3_{300}(U_{s_9}) & B^3_{210}(U_{s_9}) & \cdots & B^3_{003}(U_{s_9}) \\
+		\end{array}
+		\right)
+		\left(
+		\begin{array}{c}
+		\mathbf P_0 \\
+		\mathbf P_1 \\
+		\vdots \\
+		\mathbf P_9
+		\end{array}
+		\right)
+		=
+		\left(
+		\begin{array}{c}
+		\mathbf {\bar Q}_1 \\
+		\mathbf {\bar Q}_2 \\
+		\vdots \\
+		\mathbf {\bar Q}_9
+		\end{array}
+		\right)
+	\label{equ:BPQ_bar}
+\end{equation}
+
+\noindent where $\{U_{s_k}=(u_{s_k},v_{s_k},w_{s_k})\}_{k=1}^9$ are the barycentric parameters of the constraint normals,
+which are uniformly distributed along the boundaries of the triangular domain, and $\{\mathbf{\bar Q_k}\}_{k=1}^9 $ are
+the constraint normals. Equation~\ref{equ:BPQ_bar} can be rewritten as
+
+\begin{equation}
+	\footnotesize
+	\mathbf{\bar M} \mathbf P=\mathbf{\bar Q}
+\end{equation}
+
+The constraint normal fitting is to minimize $(\mathbf M \mathbf P - \mathbf Q)^{\mathrm T}(\mathbf M \mathbf P -
+\mathbf Q)$ subject to the constraint $\mathbf{\bar M} \mathbf P=\mathbf{\bar Q}$. Using the method of Lagrange
+multipliers, we obtain
+
+\begin{equation}
+	\footnotesize
+	\left(
+		\begin{array}{cc}
+			\mathbf M^{\mathrm T}\mathbf M & \mathbf{\bar M}^{\mathrm T} \\
+			\mathbf{\bar M} & \mathbf O
+		\end{array}
+	\right)
+	\left(
+		\begin{array}{c}
+			\mathbf P\\
+			\bm{\Lambda}
+		\end{array}
+	\right)
+	=
+	\left(
+		\begin{array}{cc}
+			\mathbf M^{\mathrm T}& \mathbf O\\
+			\mathbf O &\mathbf I
+		\end{array}
+	\right)
+	\left(
+		\begin{array}{c}
+			\mathbf Q\\
+			\mathbf {\bar Q}
+		\end{array}
+	\right)
+	\label{equ:lagrange}
+\end{equation}
+
+\noindent where $\bm{\Lambda}$ is the Lagrange multiplier.
+
+All the triangular B\'ezier patches of the normal field are of degree 3. Thus, Equation~\ref{equ:lagrange} can be
+combined for all normal patches as follows:
+
+\begin{equation}
+	\footnotesize
+	\left(
+		\begin{array}{cc}
+			\mathbf M^{\mathrm T}\mathbf M & \mathbf{\bar M}^{\mathrm T} \\
+			\mathbf{\bar M} & \mathbf O
+		\end{array}
+	\right)
+	\left(
+		\begin{array}{c}
+			\mathbb P^N\\
+			\mathbb{\Lambda}^N
+		\end{array}
+	\right)
+	=
+	\left(
+		\begin{array}{cc}
+			\mathbf M^{\mathrm T}& \mathbf O\\
+			\mathbf O &\mathbf I
+		\end{array}
+	\right)
+	\left(
+		\begin{array}{c}
+			\mathbb Q^N\\
+			\mathbb {\bar Q}^N
+		\end{array}
+	\right)
+	\label{equ:lagrange2}
+\end{equation}
+
+$\mathbb P^N$ is the control points of all cubic triangular B\'ezier surfaces of normal field, $\mathbb \Lambda^N$ is
+all of the Lagrange multipliers, and $\mathbb Q^N$ and $\mathbb{\bar Q}^N$ are the sampled fitting normals and sampled
+constraint normals on all of the normal patches, respectively. The solution to Equation~\ref{equ:lagrange2} is:
+
+\begin{equation}
+	\footnotesize
+	\left(
+		\begin{array}{c}
+			\mathbb P^N\\
+			\mathbb{\Lambda}^N
+		\end{array}
+	\right)
+	=
+	\left(
+		\begin{array}{cc}
+			\mathbf M^{\mathrm T}\mathbf M & \mathbf{\bar M}^{\mathrm T} \\
+			\mathbf{\bar M} & \mathbf O
+		\end{array}
+	\right)^{-1}
+	\left(
+		\begin{array}{cc}
+			\mathbf M^{\mathrm T}& \mathbf O\\
+			\mathbf O &\mathbf I
+		\end{array}
+	\right)
+	\left(
+		\begin{array}{c}
+			\mathbb Q^N\\
+			\mathbb {\bar Q}^N
+		\end{array}
+	\right)
+	\label{equ:lagrange_solution}
+\end{equation}
+
+Due to the fixed sampling parameters, the product of the first two matrices on the right of
+Equation~\ref{equ:lagrange_solution} is independent of the specific model. Thus they can be pre-computed and loaded if
+necessary. Furthermore, the last 9 rows of the matrix product can be ignored because $\mathbb \Lambda^N$ is not
+considered. As a result, the control points of all cubic normal patches can be denoted as:
+
+\begin{equation}
+	\footnotesize
+	\mathbb P^N = \mathbf M_r
+	\left(
+		\begin{array}{c}
+			\mathbb Q^N\\
+			\mathbb {\bar Q}^N
+		\end{array}
+	\right)
+	\label{equ:ctrl_points_solution_n}
+\end{equation}
+
+\noindent where $\mathbf M_r$ are the first 10 rows of
+$$
+	\footnotesize
+	\left(
+		\begin{array}{cc}
+			\mathbf M^{\mathrm T}\mathbf M & \mathbf{\bar M}^{\mathrm T} \\
+			\mathbf{\bar M} & \mathbf O
+		\end{array}
+	\right)^{-1}
+	\left(
+		\begin{array}{cc}
+			\mathbf M^{\mathrm T}& \mathbf O\\
+			\mathbf O &\mathbf I
+		\end{array}
+	\right)
+$$
+
+In this manner, we can obtain the continuous normal fields across the deformed model. Figure~\ref{fig:normal_refinement}
+shows the shading result of Figure~\ref{fig:all_ffd}(d).
+
+%\begin{figure}[htb]
+	%\centering
+	%\subfigure[Shading result]{\includegraphics[height=0.13\textheight]{pic/normal_refinement_1.png}}
+	%\subfigure[Artifacts caused by unsmoothed geometry]{\includegraphics[height=0.13\textheight]{pic/normal_refinement_2.png}}
+	%\caption{Shading result and its artifacts caused by unsmoothed geometry by using a
+		%constrained fitting normal field on the accurate FFD of the model in Figure~\ref{fig:all_ffd}(d)}
+	%\label{fig:normal_refinement}
+%\end{figure}
+
+\begin{wrapfigure}{r}{0.29\textwidth}
+	\centering
+	\includegraphics[height=0.09\textheight]{pic/normal_refinement_2.png}
+	\caption{Shading result and artifacts caused by unsmoothed geometry using a
+		constrained fitting normal field on the accurate FFD of the model in Figure~\ref{fig:all_ffd}(d)}
+	\label{fig:normal_refinement}
+\end{wrapfigure}
+
+%%%%%%%%%%%%%
+
+\subsection{Improvement of the deformed geometry}
+\label{sec:geometry_fitting}
+
+The shading in Figure~\ref{fig:normal_refinement} is smooth except for the geometry artifacts, i.e., the unsmooth
+silhouettes and patch boundaries. Various solutions can be used to smooth the silhouettes and edges for the Phong
+shading of polygonal objects~\cite{Vlachos01, Boubekeur08}.
+%Because the geometry is represented in terms of triangular B\'ezier patches,
+A method inspired by the PN-triangles~\cite{Vlachos01} is proposed to improve the silhouettes, patch
+boundaries, and keep the sharp edges.
+
+In the PN-triangle algorithm~\cite{Vlachos01}, a cubic triangular B\'ezier patch is adopted to replace the corresponding
+triangle to obtain a smooth geometry appearance in Phong shading. In accurate FFD, the deformed object is represented in
+terms of triangular B\'ezier patches~\cite{Feng98, Feng00, Cui14}. The degree of the triangular patch is the degree of
+the B-spline volume, which is typically higher than 3.
+\textcolor{red}{It}
+%A triangular B\'ezier patch of a higher degree
+results in higher computational costs.
+Furthermore, the corresponding geometry adjustment becomes complex because there are
+\textcolor{red}{many} more control points.
+%in the triangular B\'ezier patches.
+According to our experiments, the cubic
+triangular B\'ezier patch is feasible and sufficiently flexible to approximate the accurate FFD result. Similar to the
+constrained normal field fitting approach in Section~\ref{sec:normal_fitting}, the geometry of the accurate FFD result
+can be approximated by cubic triangular B\'ezier patches using the following equation:
+
+\begin{equation}
+	\footnotesize
+	\mathbb P^V = \mathbf M_r
+	\left(
+		\begin{array}{c}
+			\mathbb Q^V\\
+			\mathbb {\bar Q}^V
+		\end{array}
+	\right)
+	\label{equ:ctrl_points_solution_v}
+\end{equation}
+
+\noindent where $\mathbb P^V$ is the control points of all cubic triangular B\'ezier patches of the deformed object.
+$\mathbb Q^V$ and $\mathbb {\bar Q}^V$ are those sampled fitting points and sampled constraint points on all cubic
+triangular B\'ezier patches, respectively. The sampling strategy of the constrained geometry fitting approach presented
+above is the same as that of the normal field in Section~\ref{sec:normal_fitting}.
+
+%Using the constrained fitting method for both geometry and normal,
+\textcolor{red}{Using the above method,}
+a $G^0$ continuous geometry and a $G^0$/$G^{-1}$
+normal field across the smooth and sharp edges are obtained. Next, the geometry is adjusted to obtain a smooth geometry
+appearance along smooth edges and to preserve shape features along sharp edges.
+
+The adjustment of triangular B\'ezier patches sharing a smooth edge is similar to the PN-triangle method. As shown in
+Figure~\ref{fig:sharp}(a), the PN-triangle approach projects $(2V_0+V_1)/3$ into the tangent plane at $V_0$
+\cite{Vlachos01}, whereas the proposed method projects the corresponding edge control point $P_0$ onto the tangent plane
+at $V_0$.
+%Due to the constrained geometry fitting method, the control points sharing the common edge coincide.
+%Furthermore, the normals at the ends of a smooth edge are identical.
+\textcolor{red}{Thus, a visually} plausible $G^1$ smooth
+geometry across the smooth edge is obtained.
+%using the above edge control point adjustment approach.
+In
+Figure~\ref{fig:sharp}(a), red and green dashed lines indicate two original triangles, and red and green solid curve
+nets indicate cubic triangular B\'ezier surfaces, which are the adjustment results.
+
+%The above control point adjustment scheme, which shares a smooth edge, is not applicable to the patches that share a
+%sharp edge because a sharp edge has different normals at its end vertex. The direct projections of related control
+%points will produce a crack between two neighboring triangular B\'ezier patches sharing a sharp edge, as shown in
+%Figure~\ref{fig:sharp}(b).
+
+%\begin{figure}[htbp]
+%\begin{center}
+	%\begin{minipage}[c]{0.7\textwidth}
+		%\centering
+		%\subfigure[Near a smooth edge]{\includegraphics[height=0.13\textheight]{pic/sharp1.png}}
+		%\hspace{1.5cm}
+		%%\subfigure[Abnormal adjustments near a sharp edge]{\includegraphics[height=0.13\textheight]{pic/sharp2.png}}
+		%\subfigure[Near a sharp edge]{\includegraphics[height=0.13\textheight]{pic/sharp3.png}}
+		%\caption{Adjustment of control points of the deformed geometry}
+		%\label{fig:sharp}
+	%\end{minipage}
+	%\begin{minipage}[c]{0.29\textwidth}
+		%\centering
+		%\includegraphics[width=1.0\linewidth]{pic/final_result.png}
+		%\caption{Shading result after adjusting the deformed geometry in Figure~\ref{fig:normal_refinement}}
+		%\label{fig:final_result}
+	%\end{minipage}
+%\end{center}
+%\end{figure}
+
+\begin{wrapfigure}{r}{0.3\textwidth}
+		\centering
+		\subfigure[Near a smooth edge]{\includegraphics[height=0.1\textheight]{pic/sharp1.png}}
+		\subfigure[Near a sharp edge]{\includegraphics[height=0.1\textheight]{pic/sharp3.png}}
+		\caption{Adjustment of control points of the deformed geometry}
+		\label{fig:sharp}
+\end{wrapfigure}
+
+%\begin{figure}[htb]
+	%\centering
+	%\subfigure[Adjustments near a smooth edge]{\includegraphics[height=0.13\textheight]{pic/sharp1.png}}
+	%\subfigure[Abnormal adjustments near a sharp edge]{\includegraphics[height=0.13\textheight]{pic/sharp2.png}}
+	%\subfigure[Correct adjustments near a sharp edge]{\includegraphics[height=0.13\textheight]{pic/sharp3.png}}
+	%\caption{Adjustment of control points of the deformed geometry}
+	%\label{fig:sharp}
+%\end{figure}
+
+Similarly, the geometry adjustment of patches sharing a sharp edge is shown in Figure~\ref{fig:sharp}(b). The two
+corresponding control points $P_0$ and $P_0'$ in the neighboring triangular B\'ezier patch $f_0$ and $f_1$ sharing a
+sharp edge are projected to the vector $\mathbf t = \mathbf n_0 \times \mathbf n_1$, where $\mathbf n_0$ and $\mathbf
+n_1$ are two distinct normals at the same vertex $V_0$.  This method yields a $G_0$ continuous geometry across a sharp
+edge. A $G^{-1}$ continuous normal field across the sharp edge is obtained, which can preserve the sharp feature along
+the sharp edge.
+
+After the above
+%edge control point
+adjustment, visually smooth geometries, such as silhouettes and edges, will be
+obtained. The sharp features along the sharp edges are also preserved. An example is shown in
+Figure~\ref{fig:final_result}.
+
+\begin{wrapfigure}{r}{0.2\textwidth}
+	\centering
+	\includegraphics[width=1.0\linewidth]{pic/final_result.png}
+	\caption{Shading result after adjusting the deformed geometry in Figure~\ref{fig:normal_refinement}}
+	\label{fig:final_result}
+\end{wrapfigure}
+%\begin{figure}[htb]
+	%\centering
+	%\includegraphics[width=0.3\linewidth]{pic/final_result.png}
+	%\caption{Result of the adjustment of the deformed geometry in Figure~\ref{fig:normal_refinement}}
+	%\label{fig:final_result}
+%\end{figure}
+
+%%%%%%%%%%%%%%%
+
+\subsection{Consideration of knot box clipping}
+
+If there is only one knot box,
+%the B-spline volume is a B\'ezier volume, and
+the above deformed geometry and normal
+field methods are suitable. However, for a general case, where the B-spline volume contains more than one knot box, the
+input polygonal object will be clipped against the knot boxes, and thus, all of the sub-triangles will lie in one knot
+box. If the above adjustment method is directly applied to the subdivided polygonal object, the deformed geometry does
+not appear fair near the knots. An example is shown in Figure~\ref{fig:unfairness}. Figure~\ref{fig:unfairness}(a) is
+the deformed geometry by a B-spline volume with multiple knot boxes. Both the geometry and shading are smooth. However,
+the geometry appearance is not fair.
+%There are some bumps near the clipped edges.
+The red curves are the boundaries of
+triangular B\'ezier patches corresponding to the original triangles on the model; the yellow curves are the boundaries
+of deformed sub-triangles resulting from knot box clipping and subsequent triangulation.
+\textcolor{red}{The unfair parts are shown in the red frames in Figure~\ref{fig:unfairness}(b).}
+%One triangle will be subdivided into several sub-triangles.
+%According to the above method, each sub-triangle is approximately deformed as a
+%cubic triangular B\'ezier patch via above constrained fitting.
+The sub-triangles from one original triangle are
+co-planar, and the constrained fittings for these deformed sub-triangles will lead to unfairness.
+
+%We explain the unfairness problem by using a 2D illustration. As shown in Figure~\ref{fig:unfairness}(c), curve $V_0V_1$
+%is an edge of a deformed triangle. The green curve is the deformed geometry adjustment result when there is no knot box
+%clipping. $V_m$ is a clipping point on $V_0V_1$ and the red curves are the adjustment results of $V_0V_m$ and $V_mV_1$. If
+%there is no clipping, $V_m$ will be adjusted to $V'$; otherwise, $V_m$ remains on $V_0V_1$ after the adjustment. The
+%difference leads to unfairness. Our target is to propose an adjustment scheme so that the deformed sub-triangles are
+%smooth and fairing. The proposed adjustment scheme includes both geometry adjustment and normal adjustment.
+
+\begin{figure}[htbp]
+\begin{center}
+	\begin{minipage}[c]{0.56\textwidth}
+		\centering
+		\subfigure[\textcolor{red}{Shading result with boundary curves}]{\includegraphics[width=0.32\linewidth]{pic/clipping2.png}}
+		\subfigure[\textcolor{red}{Shading result}]{\includegraphics[width=0.32\linewidth]{pic/clipping1.png}}
+		\subfigure[Visually smooth and fair deformed geometry]{\includegraphics[width=0.32\linewidth]{pic/clipping3.png}}
+		\caption{Unfairness near the clipping points in the deformed geometry and the improved result}
+		\label{fig:unfairness}
+	\end{minipage}
+	\begin{minipage}[c]{0.43\textwidth}
+		\centering
+		\subfigure[\textcolor{red}{Shading result with boundary curves}]{\includegraphics[height=0.125\textheight]{pic/linear_normal_2.png}}
+		\subfigure[\textcolor{red}{Shading result}]{\includegraphics[height=0.125\textheight]{pic/linear_normal_1.png}}
+		\subfigure[Improved result of (a)]{\includegraphics[height=0.125\textheight]{pic/linear_normal_3.png}}
+		\caption{The normal at the clipped vertex via barycentric coordinate interpolation will lead
+				to bumps and the solution}
+		\label{fig:linear_normal}
+	\end{minipage}
+\end{center}
+\end{figure}
+
+%\begin{figure}[htb]
+	%\centering
+	%\subfigure[Ordinary shading result]{\includegraphics[width=0.15\linewidth]{pic/clipping1.png}}
+	%\subfigure[Attaching curve nets]{\includegraphics[width=0.15\linewidth]{pic/clipping2.png}}
+	%\subfigure[Illustration of the difference between the clipped and unclipped polygon]
+			%{\includegraphics[width=0.35\linewidth]{pic/clipping_illu.png}}
+	%\subfigure[Visually smooth and fairly deformed geometry]{\includegraphics[width=0.15\linewidth]{pic/clipping3.png}}
+	%\caption{Unfairness near the clipping points in the deformed geometry and the improved result}
+	%\label{fig:unfairness}
+%\end{figure}
+
+\subsubsection{Adjustment of the deformed geometry clipped against knot boxes}
+\label{sec:clipped}
+
+There is a heuristic solution to this unfairness problem. For each triangle in the original object, the corresponding
+PN-triangle is generated first. If the triangle is subdivided against the knot boxes, the clipped vertices are moved to
+the corresponding positions on the PN-triangle. Then, we apply the constrained fitting approach to the modified
+sub-triangles. As a result, we can obtain a visually smooth and fair deformed geometry. The improved result of the
+example in Figure~\ref{fig:unfairness}(a) is shown in Figure~\ref{fig:unfairness}(c).
+
+\subsubsection{Normal adjustment at the clipped vertex}
+\label{sec:normal_adjustment}
+
+Intuitively, the normal at the clipped vertex can be calculated by interpolating the barycentric coordinates.
+%Similar to the unfairness of the deformed geometry after knot box clipping in Section~\ref{sec:clipped},
+%there is also an
+\textcolor{red}{But it leads to an}
+%unfairness problem in the normal field. An example is shown in Figure~\ref{fig:linear_normal}(a).  The normals of $V_0$
+unfairness problem in the normal field \textcolor{red}{as shown} in Figure~\ref{fig:linear_normal}(a). 
+\textcolor{red}{The unfair parts are shown in the red frames in Figure~\ref{fig:linear_normal}(b).}
+The normals of $V_0$
+and $V_1$ are $\mathbf n_0$ and $\mathbf n_1$, respectively. Both of the normals are horizontally rightward. Thus, the
+normal $\mathbf n_c$ of the subdivided vertex $V_c$ is also horizontally rightward according to the barycentric
+coordinate interpolation. There is no artifact when using the normal $\mathbf n_c$ to determine the normal field for
+rendering.
+%the deformed object
+However, if it is used to adjust the control points for smoothing the deformed geometry,
+i.e., the edge control points adjacent to $V_c$,
+%are projected onto the plane perpendicular to $\mathbf n_c$,
+%the linearly interpolated normal $\mathbf n_c$
+\textcolor{red}{it}
+will lead to abnormal bumps on the deformed geometry.
+
+%\begin{figure}[htb]
+	%\centering
+	%\subfigure[Ordinary shading result]{\includegraphics[height=0.13\textheight]{pic/linear_normal_1.png}}
+	%\subfigure[Shading with curve nets]{\includegraphics[height=0.13\textheight]{pic/linear_normal_2.png}}
+	%\subfigure[Improved result of (a)]{\includegraphics[height=0.13\textheight]{pic/linear_normal_3.png}}
+	%\caption{Normal at the clipped vertex via barycentric coordinate interpolation will lead
+			%to abnormal bumps and the solution}
+	%\label{fig:linear_normal}
+%\end{figure}
+
+The solution to this problem is to define a reasonable normal at each clipped vertex.
+%This will lead to an adjusted normal field.
+%Similar to the geometry adjustment approach in Section~\ref{sec:clipped},
+The normal at the subdivided
+vertex can take the corresponding normal on the quadratic triangular B\'ezier normal field of the
+PN-triangle~\cite{Vlachos01}. After using the adjustment scheme, the normal field adjustment for the example in
+Figure~\ref{fig:linear_normal}(a) is shown in Figure~\ref{fig:linear_normal}(c), where the abnormal bumps disappear.
+The adjusted normal field is only for smoothing the deformed geometry in Section~\ref{sec:geometry_fitting}, where some
+edge control points are projected onto the planes or tangent lines determined by the normals. The normal field for
+rendering the deformed object is the normal field constructed in Section~\ref{sec:normal_fitting}, where the normal at
+the clipped vertex is obtained via barycentric coordinate interpolation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Parallel Implementation on the GPU}
+
+The proposed algorithm contains a CPU execution component and a GPU execution component. As a data- and
+computing-intensive algorithm, most of the computing overhead is implemented on the GPU. Because the algorithm is local,
+it can fully utilize the parallel computing power of the GPU.  The flowchart of the proposed algorithm is shown in
+Figure~\ref{fig:workflow}. The blue boxes indicate the steps that are executed on the CPU. The yellow boxes are the
+steps executed on the GPU and are the core of the proposed algorithm. NVIDIA CUDA is used to perform the GPU
+computations.
+
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=0.8\linewidth]{pic/flowchart.png}
+	\caption{Flowchart of the proposed algorithm}
+	\label{fig:workflow}
+\end{figure}
+
+\subsection{Parallel computing sampling normals and points}
+
+The first step in the proposed algorithm is to sample normals and points on the deformed object.  More specifically, we
+must calculate all elements in $\mathbb Q^N$ and $\mathbb {\bar Q}^N$ in Equation~\ref{equ:ctrl_points_solution_n} and
+all elements in $\mathbb Q^V$ and $\mathbb {\bar Q}^V$ in Equation~\ref{equ:ctrl_points_solution_v}, which are the
+control points of cubic triangular B\'ezier patches for the normal field and geometry, respectively.
+
+$\mathbb Q^V$ and $\mathbb {\bar Q}^V$ can be directly obtained via B-spline volume evaluations. Two methods can be used
+for this: the de Boor Cox algorithm and the matrix approach~\cite{Farin02}. We adopted the latter method because it is
+less computationally burdensome and is more suitable for GPU implementation compared to the former method. The
+deformation of a sampled normal in $\mathbb Q^N$ and $\mathbb {\bar Q}^N$ can be evaluated by
+Equation~\ref{equ:gain_normal}.
+
+In our implementation, one CUDA thread is used to calculate one sampling point and one sampling normal. Because each
+cubic patch contains the same number of sampling points, the task arrangement is straightforward.
+
+\subsection{Parallel computing constrained fitting patches for the geometry and normal field}
+
+Having obtained $\mathbb Q^V$, $\mathbb {\bar Q}^V$, $\mathbb Q^N$ and $\mathbb {\bar Q}^N$, the next step is to
+calculate the control points of the normal patches and geometry patches, i.e., the matrix $\mathbb P^N$ in
+Equation~\ref{equ:ctrl_points_solution_n} and the matrix $\mathbb P^V$ in Equation~\ref{equ:ctrl_points_solution_v},
+respectively. This can be accomplished by matrix multiplication. cuBLAS, which is a library of optimized implementations
+of BLAS on a GPU, is adopted for these matrix multiplications \cite{cublas}. \textcolor{red}{The elements of $\mathbb
+P^N$, $\mathbb Q^N$, $\mathbb {\bar Q}^N$, $\mathbb P^V$, $\mathbb Q^V$ and $\mathbb {\bar Q}^V$ are 3-dimensional
+points, which are not supported by cuBLAS. Thus, Equation~\ref{equ:ctrl_points_solution_n} and
+Equation~\ref{equ:ctrl_points_solution_v} should be rewritten and combined as the following feasible equation to fully
+explore the parallel computing power of the GPU:}
+%The elements of $\mathbb P^N$, $\mathbb
+%Q^N$ and $\mathbb {\bar Q}^N$ are 3-dimensional points, which are not supported by cuBLAS. Thus,
+%Equation~\ref{equ:ctrl_points_solution_n} should be rewritten as the following feasible equation:
+
+%\begin{equation}
+	%\left(
+		%\begin{array}{ccc}
+			%\mathbb P^N_x & \mathbb P^N_y & \mathbb P^N_z
+		%\end{array}
+	%\right)
+	%=\mathbf M_r
+	%\left(
+		%\begin{array}{ccc}
+			%\mathbb Q^N_x & \mathbb Q^N_y & \mathbb Q^N_z\\
+			%\mathbb {\bar Q}^N_x & \mathbb {\bar Q}^N_y & \mathbb {\bar Q}^N_z
+		%\end{array}
+	%\right)
+	%\label{equ:ctrl_points_solution_n_seperate}
+%\end{equation}
+
+%Similarly, Equation~\ref{equ:ctrl_points_solution_v} for the geometry surface should be rewritten as the following
+%feasible equation:
+
+%\begin{equation}
+	%\left(
+		%\begin{array}{ccc}
+			%\mathbb P^V_x & \mathbb P^V_y & \mathbb P^V_z
+		%\end{array}
+	%\right)
+	%=\mathbf M_r
+	%\left(
+		%\begin{array}{ccc}
+			%\mathbb Q^V_x & \mathbb Q^V_y & \mathbb Q^V_z\\
+			%\mathbb {\bar Q}^V_x & \mathbb {\bar Q}^V_y & \mathbb {\bar Q}^V_z
+		%\end{array}
+	%\right)
+	%\label{equ:ctrl_points_solution_v_seperate}
+%\end{equation}
+
+%To fully explore the parallel computing power of the GPU, Equations~\ref{equ:ctrl_points_solution_n_seperate} and
+%\ref{equ:ctrl_points_solution_v_seperate} are combined as follows:
+
+\begin{equation}
+	\footnotesize
+	\left(
+		\begin{array}{cccccc}
+			\mathbb P^V_x & \mathbb P^V_y & \mathbb P^V_z & \mathbb P^N_x & \mathbb P^N_y & \mathbb P^N_z
+		\end{array}
+	\right)
+	=
+	\mathbf M_r
+	\left(
+		\begin{array}{cccccc}
+			\mathbb Q^V_x & \mathbb Q^V_y & \mathbb Q^V_z & \mathbb Q^N_x & \mathbb Q^N_y & \mathbb Q^N_z\\
+			\mathbb {\bar Q}^V_x & \mathbb {\bar Q}^V_y & \mathbb {\bar Q}^V_z & \mathbb {\bar Q}^N_x & \mathbb {\bar Q}^N_y & \mathbb {\bar Q}^N_z
+		\end{array}
+	\right)
+	\label{equ:ctrl_points_solution_combine}
+	%\begin{aligned}
+	%&\left(
+		%\begin{array}{cccccc}
+			%\mathbf P^V_x & \mathbf P^V_y & \mathbf P^V_z & \mathbf P^N_x & \mathbf P^N_y & \mathbf P^N_z
+		%\end{array}
+	%\right) \\
+	%=&
+	%\mathbf M_r
+	%\left(
+		%\begin{array}{cccccc}
+			%\mathbf Q^V_x & \mathbf Q^V_y & \mathbf Q^V_z & \mathbf Q^N_x & \mathbf Q^N_y & \mathbf Q^N_z\\
+			%\mathbf {\bar Q}^V_x & \mathbf {\bar Q}^V_y & \mathbf {\bar Q}^V_z & \mathbf {\bar Q}^N_x & \mathbf {\bar Q}^N_y & \mathbf {\bar Q}^N_z
+		%\end{array}
+	%\right)
+	%\end{aligned}
+	%\label{}
+\end{equation}
+
+\subsection{Calculating the adjusted normals for the subdivided geometry}
+
+As described in Section~\ref{sec:normal_adjustment}, each sub-triangle has three adjustment normals, one for each
+vertex. These vertex normals are taken from the corresponding points on the normal field of the PN-triangle of the
+original triangle. Then, they undergo deformation via Equation~\ref{equ:gain_normal} for the silhouette adjustment. Here
+we use one CUDA thread to handle one normal computation.
+
+\subsection{Adjusting the edge control points in parallel on the GPU}
+
+The main task in this step is finding 1-ring neighbors of the current triangle. A face adjacency table can accomplish
+this task. The \textcolor{red}{topological} connectivity of the polygonal model remains unchanged during the
+deformation. Thus, the face adjacency table must be constructed once in the pre-processing step and copied from the main
+memory to the GPU memory.
+
+The face adjacency table is a hash table. The hash function is $h(ID)=ID$, where $ID$ is the index of the face and the
+collision solution of this table is chaining. Each table item represents a face that is adjacent to the face whose
+index is the key value.
+
+The \textcolor{red}{topological} connectivity of the model will be modified after the subdivision against the knot boxes
+(Step 4 in Figure~\ref{fig:workflow}) and the triangulation of sub-polygons (Step 6 in Figure~\ref{fig:workflow}). Thus,
+the face adjacency table must be constructed after subdivision and triangulation (Step 7 in Figure~\ref{fig:workflow}),
+copied to the GPU memory, and used by the CUDA kernel.
+
+After obtaining the adjusted normals, control points of the geometry patches, and the face adjacency table, we can
+adjust the edge control points to tone the geometry using the method in Section~\ref{sec:geometry_fitting} in
+parallel. Here, one CUDA thread is used to adjust one patch.
+
+\subsection{GPU tessellations of the geometry and normal surfaces}
+
+The triangular B\'ezier patches for the geometry and normal field have now been obtained. However, current GPUs do not
+support the rendering of triangular B\'ezier patches directly. Thus, we must tessellate the patches into triangles for
+rendering. Here, we use the tessellation method in \cite{Cui14} to calculate the tessellated points and normals. We
+combine the point and normal evaluations as in Equation~\ref{equ:ctrl_points_solution_combine} for efficiency:
+
+%The tessellation points $\{\mathbf R_k\}_{k=1}^q$ on one triangular B\'ezier patch can be computed as follows:
+
+%\begin{equation}
+	%%\small
+	%%\footnotesize
+	%%\scriptsize
+		%\left(
+		%\begin{array}{c}
+		%\mathbf R_1 \\
+		%\mathbf R_2 \\
+		%\vdots \\
+		%\mathbf R_q
+		%\end{array}
+		%\right)
+		%=
+		%\left(
+		%\begin{array}{cccc}
+		%B^3_{300}(U_1) & B^3_{210}(U_1) & \cdots & B^3_{003}(U_1) \\
+		%B^3_{300}(U_2) & B^3_{210}(U_2) & \cdots & B^3_{003}(U_2) \\
+		%\vdots & \vdots & \ddots & \vdots \\
+		%\mathbf B^3_{300}(U_q) & B^3_{210}(U_q) & \cdots & B^3_{003}(U_q) \\
+		%\end{array}
+		%\right)
+		%\left(
+		%\begin{array}{c}
+		%\mathbf P_0 \\
+		%\mathbf P_1 \\
+		%\vdots \\
+		%\mathbf P_9
+		%\end{array}
+		%\right)
+	%\label{equ:tessellation1}
+%\end{equation}
+
+%\noindent where $\{U_k=(u_k,v_k,w_k)\}_{k=1}^q$ are the barycentric coordinates of the tessellation points and
+%$\{\mathbf P_k\}_{k=0}^9$ are the control points of the triangular B\'ezier patch. Here, we use the uniform tessellation
+%because it is an efficient solution for parallel computation. Furthermore, it avoids cracks between the patches caused
+%by the inconsistency of the tessellation points on the adjacent edges.
+
+%%\begin{figure}[htb]
+	%%\centering
+	%%\includegraphics[width=0.2\linewidth]{pic/tess_pattern.png}
+	%%\caption{The tessellation pattern of the triangular B\'ezier patch}
+	%%\label{fig:tess_pattern}
+%%\end{figure}
+
+%%Because all the triangular B\'ezier patches have the same tessellation pattern shown in Figure~\ref{fig:tess_pattern},
+%Because all triangular B\'ezier patches have the same tessellation pattern, Equation~\ref{equ:tessellation1} can be
+%combined as
+
+%\begin{equation}
+	%%\small
+	%%\footnotesize
+	%%\scriptsize
+		%\left(
+		%\begin{array}{cccc}
+		%\mathbf R_1^1 & \mathbf R_1^2 & \cdots & \mathbf R_1^f \\
+		%\mathbf R_2^1 & \mathbf R_2^2 & \cdots & \mathbf R_2^f \\
+		%\vdots & \vdots & \ddots & \vdots \\
+		%\mathbf R_q^1 & \mathbf R_q^2 & \cdots & \mathbf R_q^f \\
+		%\end{array}
+		%\right) \\
+		%=
+		%\left(
+		%\begin{array}{cccc}
+		%B^3_{300}(U_1) & B^3_{210}(U_1) & \cdots & B^3_{003}(U_1) \\
+		%B^3_{300}(U_2) & B^3_{210}(U_2) & \cdots & B^3_{003}(U_2) \\
+		%\vdots & \vdots & \ddots & \vdots \\
+		%B^3_{300}(U_q) & B^3_{210}(U_q) & \cdots & B^3_{003}(U_q) \\
+		%\end{array}
+		%\right)
+		%\left(
+		%\begin{array}{cccc}
+		%\mathbf P_0^1 & \mathbf P_0^2 & \cdots & \mathbf P_0^f \\
+		%\mathbf P_1^1 & \mathbf P_1^2 & \cdots & \mathbf P_1^f \\
+		%\vdots & \vdots & \ddots & \vdots \\
+		%\mathbf P_9^1 & \mathbf P_9^2 & \cdots & \mathbf P_9^f \\
+		%\end{array}
+		%\right)
+	%\label{}
+%\end{equation}
+
+%\noindent where $f$ is the number of the resulting triangular B\'ezier surfaces.
+
+%The above equation can be denoted as $\mathbb R^V = \mathbf B_q \mathbb P^V$. Similarly, the normal of the tessellated
+%points can be computed by $\mathbb R^N = \mathbf B_q \mathbb P^N$.
+
+%We can use cuBLAS to compute these matrix multiplications. Again, we can convert both multiplications to
+
+%\begin{equation}
+	%\left(
+		%\begin{array}{ccc}
+			%\mathbf R^V_x & \mathbf R^V_y & \mathbf R^V_z
+		%\end{array}
+	%\right)
+	%=\mathbf B_q
+	%\left(
+		%\begin{array}{ccc}
+			%\mathbf P^V_x & \mathbf P^V_y & \mathbf P^V_z\\
+		%\end{array}
+	%\right)
+	%\label{}
+%\end{equation}
+%\begin{equation}
+	%\left(
+		%\begin{array}{ccc}
+			%\mathbf R^N_x & \mathbf R^N_y & \mathbf R^N_z
+		%\end{array}
+	%\right)
+	%=\mathbf B_q
+	%\left(
+		%\begin{array}{ccc}
+			%\mathbf P^N_x & \mathbf P^N_y & \mathbf P^N_z\\
+		%\end{array}
+	%\right)
+	%\label{}
+%\end{equation}
+
+%Then, we combine them for efficiency as follows:
+
+\begin{equation}
+	\footnotesize
+	\left(
+		\begin{array}{cccccc}
+			\mathbb R^V_x & \mathbb R^V_y & \mathbb R^V_z & \mathbb R^N_x & \mathbb R^N_y & \mathbb R^N_z
+		\end{array}
+	\right)
+	=
+	\mathbf B_q
+	\left(
+		\begin{array}{cccccc}
+			\mathbb P^V_x & \mathbb P^V_y & \mathbb P^V_z & \mathbb P^N_x & \mathbb P^N_y & \mathbb P^N_z
+		\end{array}
+	\right)
+	\label{equ:last}
+\end{equation}
+
+The result can be rendered using an OpenGL Vertex Buffer Object (VBO). The format of the result in
+Equation~\ref{equ:last} is not compatible with the demands of the VBO; thus, we have to use another CUDA kernel to copy
+the result to the VBO. The last step of the deformation is to use the VBO to render the tessellation result.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Implementation Results and Comparison}
+
+The proposed method is implemented on a PC with an Intel Core i5 760 CPU@2.8GHz, 4 GB of main memory and an NVIDIA
+GeForce GTX 465 GPU. The operating system is Arch Linux x86\_64. The CPU and GPU components of our method are written
+using C++ and CUDA, respectively.
+
+In this section, we compare the rendering results, efficiencies and approximation errors of the proposed method, a
+uniform upsampling method and ~\cite{Cui13, Cui14}.
+
+\subsection{Comparison of the rendering results}
+
+The deformation results are shown in Figure~\ref{fig:chess}-\ref{fig:ship}.  Each triangular B\'ezier patch is
+tessellated into 100 triangles. There are 4 sub-figures in each of the 5 examples: (a) is the original model; (b) is the
+deformation result of accurate FFD \cite{Cui13, Cui14}; (c) is the deformation result of this paper; (d) is the textured
+shading effect of (c).
+
+%\begin{enumerate} [(a)]
+%\item The original model.
+%\item The deformation result of \cite{Cui13, Cui14}.
+%\item The deformation result of this paper.
+%\item The shading effect of (c).
+%\end{enumerate}
+
+
+%\begin{wrapfigure}{r}{0.7\textwidth}
+%\begin{figure}[phtb!]
+	%\centering
+	%\subfigure[]{\includegraphics[height=0.15\textheight]{pic/chess0.png}}
+	%\subfigure[]{\includegraphics[height=0.15\textheight]{pic/chess1.png}}
+	%\subfigure[]{\includegraphics[height=0.15\textheight]{pic/chess2.png}}
+	%\subfigure[]{\includegraphics[height=0.15\textheight]{pic/chess3.png}}
+	%%\subfigure[]{\includegraphics[height=0.15\textheight]{pic/chess4.png}}
+	%%\subfigure[]{\includegraphics[height=0.15\textheight]{pic/chess5.png}}
+	%\caption{Deformation of the Chess model by a $2\times2\times2$ B-spline volume with $5\times9\times5$ control points}
+	%\label{fig:chess}
+%\end{figure}
+%%\end{wrapfigure}
+
+%\begin{figure}[phtb!]
+	%\centering
+	%\subfigure[]{\includegraphics[height=0.15\textheight]{pic/doll0.png}}
+	%\subfigure[]{\includegraphics[height=0.15\textheight]{pic/doll1.png}}
+	%\subfigure[]{\includegraphics[height=0.15\textheight]{pic/doll2.png}}
+	%\subfigure[]{\includegraphics[height=0.15\textheight]{pic/doll3.png}}
+	%%\subfigure[]{\includegraphics[height=0.15\textheight]{pic/doll4.png}}
+	%%\subfigure[]{\includegraphics[height=0.15\textheight]{pic/doll5.png}}
+	%\caption{Deformation of the Doll model by a $2\times2\times2$ B-spline volume with $5\times5\times5$ control points}
+	%\label{fig:doll}
+%\end{figure}
+
+\begin{figure}[htbp]
+\begin{center}
+	\begin{minipage}[c]{0.48\textwidth}
+		\centering
+		\subfigure[]{\includegraphics[height=0.12\textheight]{pic/chess0.png}}
+		\subfigure[]{\includegraphics[height=0.12\textheight]{pic/chess1.png}}
+		\subfigure[]{\includegraphics[height=0.12\textheight]{pic/chess2.png}}
+		\subfigure[]{\includegraphics[height=0.12\textheight]{pic/chess3.png}}
+		\caption{Deformation of the Chess model by a $2\times2\times2$ B-spline volume with $5\times9\times5$ control points}
+		\label{fig:chess}
+	\end{minipage}
+	\begin{minipage}[c]{0.51\textwidth}
+		\centering
+		\subfigure[]{\includegraphics[height=0.12\textheight]{pic/doll0.png}}
+		\subfigure[]{\includegraphics[height=0.12\textheight]{pic/doll1.png}}
+		\subfigure[]{\includegraphics[height=0.12\textheight]{pic/doll2.png}}
+		\subfigure[]{\includegraphics[height=0.12\textheight]{pic/doll3.png}}
+		\caption{Deformation of the Doll model by a $2\times2\times2$ B-spline volume with $5\times5\times5$ control points}
+		\label{fig:doll}
+	\end{minipage}
+\end{center}
+\end{figure}
+
+\begin{wrapfigure}{r}{0.28\textwidth}
+%\begin{figure}[phtb!]
+	\centering
+	\subfigure[]{\includegraphics[height=0.08\textheight]{pic/rabbit0.png}}
+	\subfigure[]{\includegraphics[height=0.08\textheight]{pic/rabbit1.png}}
+	\subfigure[]{\includegraphics[height=0.08\textheight]{pic/rabbit2.png}}
+	\subfigure[]{\includegraphics[height=0.08\textheight]{pic/rabbit3.png}}
+	%\subfigure[]{\includegraphics[height=0.1\textheight]{pic/rabbit4.png}}
+	%\subfigure[]{\includegraphics[height=0.1\textheight]{pic/rabbit5.png}}
+	\caption{Deformation of the Rabbit model by a $2\times2\times2$ B-spline volume with $5\times8\times5$ control points}
+	\label{fig:rabbit}
+%\end{figure}
+\end{wrapfigure}
+
+%\begin{wrapfigure}{r}{0.4\textwidth}
+\begin{figure}[ptb!]
+	\centering
+	\subfigure[]{\includegraphics[height=0.12\textheight]{pic/ship0.png}}
+	\subfigure[]{\includegraphics[height=0.12\textheight]{pic/ship1.png}}
+	\subfigure[]{\includegraphics[height=0.12\textheight]{pic/ship2.png}}
+	\subfigure[]{\includegraphics[height=0.12\textheight]{pic/ship3.png}}
+	%\subfigure[]{\includegraphics[height=0.12\textheight]{pic/ship4.png}}
+	%\subfigure[]{\includegraphics[height=0.12\textheight]{pic/ship5.png}}
+	\caption{Deformation of the Ship model by a $3\times3\times3$ B-spline volume with $5\times8\times5$ control points}
+	\label{fig:ship}
+\end{figure}
+%\end{wrapfigure}
+
+%\begin{figure}[htbp]
+%\begin{center}
+	%\begin{minipage}[c]{0.29\textwidth}
+		%\centering
+		%\subfigure[]{\includegraphics[width=0.4\linewidth]{pic/chess0.png}}
+		%\subfigure[]{\includegraphics[width=0.49\linewidth]{pic/chess1.png}}
+		%\subfigure[]{\includegraphics[width=0.49\linewidth]{pic/chess2.png}}
+		%\subfigure[]{\includegraphics[width=0.49\linewidth]{pic/chess3.png}}
+		%\caption{Deformation of the Chess model}
+		%\label{fig:chess}
+	%\end{minipage}
+	%\begin{minipage}[c]{0.29\textwidth}
+		%\centering
+		%\subfigure[]{\includegraphics[width=0.49\textwidth]{pic/doll0.png}}
+		%\subfigure[]{\includegraphics[width=0.49\textwidth]{pic/doll1.png}}
+		%\subfigure[]{\includegraphics[width=0.49\textwidth]{pic/doll2.png}}
+		%\subfigure[]{\includegraphics[width=0.49\textwidth]{pic/doll3.png}}
+		%\caption{Deformation of the Doll model}
+		%\label{fig:doll}
+	%\end{minipage}
+	%\begin{minipage}[c]{0.33\textwidth}
+		%\centering
+		%\subfigure[]{\includegraphics[width=0.49\textwidth]{pic/ship0.png}}
+		%\subfigure[]{\includegraphics[width=0.49\textwidth]{pic/ship1.png}}
+		%\subfigure[]{\includegraphics[width=0.49\textwidth]{pic/ship2.png}}
+		%\subfigure[]{\includegraphics[width=0.49\textwidth]{pic/ship3.png}}
+		%\caption{Deformation of the Doll model}
+		%\label{fig:ship}
+	%\end{minipage}
+%\end{center}
+%\end{figure}
+
+%\begin{figure}[htbp]
+	%\centering
+	%\subfigure[]{\includegraphics[height=0.11\textheight]{pic/vase0.png}}
+	%\subfigure[]{\includegraphics[height=0.11\textheight]{pic/vase1.png}}
+	%\subfigure[]{\includegraphics[height=0.11\textheight]{pic/vase2.png}}
+	%\subfigure[]{\includegraphics[height=0.11\textheight]{pic/vase3.png}}
+	%\subfigure[]{\includegraphics[height=0.11\textheight]{pic/vase4.png}}
+	%\subfigure[]{\includegraphics[height=0.11\textheight]{pic/vase5.png}}
+	%\caption{Deformation of the Greek Vase model}
+	%\label{fig:vase}
+%\end{figure}
+
+These figures illustrate that the results obtained with the proposed method are superior to those obtained with the
+other methods. The highlight is smooth because the normals that we use are independent of the model geometry. The smooth
+geometry and sharp features benefit from our geometry and normal adjustment method.
+
+\subsection{Comparison of efficiencies}
+
+The efficiencies obtained with the proposed method and \cite{Cui13, Cui14} are compared in Table~\ref{tab:compare}. The
+model we use is shown in Figure~\ref{fig:snail}; this model has 46,742 faces. There are 11 tessellation points on each
+edge. Thus, a triangular B\'ezier patch is tessellated into 100 sub-triangles. The degree of the B-spline volume is
+$2\times2\times2$.
+
+\begin{table}[htbp]
+	\centering
+	\footnotesize
+	\caption{Comparison of the efficiencies of our method, \cite{Cui13} and \cite{Cui14} (ms)}
+	\begin{tabular}{llll}
+		\hline
+		Step & Our method & \cite{Cui13} & \cite{Cui14}\\
+		\hline
+		Copy control points to the GPU & 0.009 & 0.009 & 0.009 \\
+		Calculate the sampling points & 8.469 & - & 6.701 \\
+		Calculate the constraint points & 2.879 & - & - \\
+		Calculate the control points & 3.971 & 11.608 & - \\
+		Calculate the adjusting normals & 1.162 & - & - \\
+		Adjust the control points & 2.003 & - & - \\
+		Calculate the tessellation points & 4.861 & 24.33 & 7.507 \\
+		Copy the results to the VBO & 3.092 & - & 3.301 \\
+		render & 10.816 & 10.709 & 10.773 \\
+		total & 37.262 & 46.656 & 28.291 \\
+		\hline
+	\end{tabular}
+	\label{tab:compare}
+\end{table}
+
+%\begin{figure}[htbp]
+%\begin{center}
+	%\begin{minipage}[c]{0.19\textwidth}
+		%\centering
+		%\subfigure[]{\includegraphics[width=1\textwidth]{pic/snail0.png}}
+		%\subfigure[]{\includegraphics[width=1\textwidth]{pic/snail1.png}}
+		%\caption{Deformation of the Snail model}
+		%\label{fig:snail}
+	%\end{minipage}
+	%\begin{minipage}[c]{0.80\textwidth}
+		%\centering
+		%\subfigure{\includegraphics[width=0.19\linewidth]{pic/err0_origin.png}}
+		%\subfigure{\includegraphics[width=0.19\linewidth]{pic/err1_appro.png}}
+		%\subfigure{\includegraphics[width=0.19\linewidth]{pic/err2_accu.png}}
+		%\subfigure{\includegraphics[width=0.19\linewidth]{pic/err3_v.png}}
+		%\subfigure{\includegraphics[width=0.19\linewidth]{pic/err4_n.png}}
+		%\subfigure{\includegraphics[width=0.19\linewidth]{pic/err10_diff.png}} \\
+		%\subfigure{\includegraphics[width=0.19\linewidth]{pic/err5_origin.png}}
+		%\subfigure{\includegraphics[width=0.19\linewidth]{pic/err6_appro.png}}
+		%\subfigure{\includegraphics[width=0.19\linewidth]{pic/err7_accu.png}}
+		%\subfigure{\includegraphics[width=0.19\linewidth]{pic/err8_v.png}}
+		%\subfigure{\includegraphics[width=0.19\linewidth]{pic/err9_n.png}}
+		%\subfigure{\includegraphics[width=0.19\linewidth]{pic/err11_diff.png}}
+		%\caption{Error testing}
+		%\label{fig:error}
+	%\end{minipage}
+%\end{center}
+%\end{figure}
+
+\begin{wrapfigure}{r}{0.33\textwidth}
+%\begin{figure}[htbp]
+	\centering
+	\subfigure[Shading of the proposed algorithm]{\includegraphics[width=0.16\textwidth]{pic/snail1.png}}
+	\subfigure[Shading of UUS algorithm]{\includegraphics[width=0.16\textwidth]{pic/snail2.png}}
+	%\caption{Deformation of the Snail model}
+	\caption{Shading results for the proposed algorithm and UUS algorithm}
+	\label{fig:snail}
+%\end{figure}
+\end{wrapfigure}
+
+Table~\ref{tab:compare} illustrates that the speed of our method is lower than that of \cite{Cui14} due to additional
+geometry adjustment, normal field computation and adjustment, but higher than that of \cite{Cui13}.  The proposed method
+is sufficiently fast to handle large models in real time.
+
+\subsection{Approximation error}
+
+In the proposed smooth FFD, both the geometry and normal are obtained approximately via constrained fitting. Thus, there
+are errors in the geometry and normal compared with the accurate FFD. However, it is difficult to evaluate the errors
+for the polygonal model with the vertex normal because the given normal is approximate. Here, we use a Cube model of
+edge length 2, \textcolor{red}{and a Utah teapot model consists of 36 cubic B\'ezier patches to test the approximation error}
+\textcolor{red}{, because} the geometry and normal of \textcolor{red}{both} the input objects are defined accurately.
+The deformation of the Cube model by \cite{Cui13} and \cite{Cui14} is also accurate for both the geometry and normal.
+\textcolor{red}{The accurate deformation result of Utah teapot is obtained by using original FFD on enough sampling
+points on these B\'ezier surfaces.}
+The test results are shown in Figure~\ref{fig:error}, where the first and second rows are the Cubic model in a
+tri-quadratic and tri-cubic B-spline volume, respectively. 
+\textcolor{red}{The third row is the Utah teapot in a tri-quadratic B-spline volume.}
+\textcolor{red}{The longest edges of the axis-aligned bounding box of Utah teapot is 2 units long.}
+The first column is the original model.
+The 2nd and 3rd columns are the deformation results of \textcolor{red}{the proposed method}
+%and \textcolor{red}{the method} in \cite{Cui14}, respectively.
+and \textcolor{red}{the accurate deformation results}, respectively.
+\textcolor{red}{The 4th column are the differences between the shading results of the proposed method and the accurate
+deformation results. The color of the pixels $(r, g, b)$ in these pictures are generated by
+$(255-|r_1-r_0|, 255-|g_1-g_0|, 255-|b_1-b_0|)$, where $(r_0, g_0, b_0)$ and $(r_1, g_1, b_1)$ are the corresponding
+pixels in the 1st and 2nd columns, respectively.}
+%deformation results. The color of the pixels $P_{i,j}^{diff}$ in these pictures are generated by $(255 -
+%|P_{i,j}^{appro}.R - P_{i,j}^{accu}.R|, 255 - |P_{i,j}^{appro}.G - P_{i,j}^{accu}.G|,
+%255 - |P_{i,j}^{appro}.B - P_{i,j}^{accu}.B|)$. Where $P_{i,j}^{appro}$ and $P_{i,j}^{accu}$ are the corresponding
+%pixels in the 1st and 2nd columns, respectively. $R, G, B$ are red, green, and blue channels of the pixels.}
+The 5th and 6th columns are the geometry and normal error of \textcolor{red}{the proposed
+method}, respectively.
+
+%\begin{enumerate} [(a)]
+%\item The original model.
+%\item The deformation result of this paper in a tri-quadratic B-spline volume.
+%\item The deformation result of \cite{Cui14} in a tri-quadratic B-spline volume.
+%\item The geometry error of (b).
+%\item The normal error of (b).
+%\item The original model.
+%\item The deformation result of this paper in a tri-cubic B-spline volume.
+%\item The deformation result of \cite{Cui14} in a tri-cubic B-spline volume.
+%\item The geometry error of (g).
+%\item The normal error of (g).
+%\end{enumerate}
+
+%\begin{figure}[htb]
+	%\centering
+	%\subfigure[]{\includegraphics[width=0.13\linewidth]{pic/err0_origin.png}}
+	%\subfigure[]{\includegraphics[width=0.13\linewidth]{pic/err1_appro.png}}
+	%\subfigure[]{\includegraphics[width=0.13\linewidth]{pic/err2_accu.png}}
+	%\subfigure[]{\includegraphics[width=0.13\linewidth]{pic/err3_v.png}}
+	%\subfigure[]{\includegraphics[width=0.13\linewidth]{pic/err4_n.png}}	\\
+	%\subfigure[]{\includegraphics[width=0.13\linewidth]{pic/err5_origin.png}}
+	%\subfigure[]{\includegraphics[width=0.13\linewidth]{pic/err6_appro.png}}
+	%\subfigure[]{\includegraphics[width=0.13\linewidth]{pic/err7_accu.png}}
+	%\subfigure[]{\includegraphics[width=0.13\linewidth]{pic/err8_v.png}}
+	%\subfigure[]{\includegraphics[width=0.13\linewidth]{pic/err9_n.png}}
+	%\caption{Error testing}
+	%\label{fig:error}
+%\end{figure}
+
+%\begin{figure}[htb]
+	%\centering
+	%\subfigure{\includegraphics[width=0.13\linewidth]{pic/err0_origin.png}}
+	%\subfigure{\includegraphics[width=0.13\linewidth]{pic/err1_appro.png}}
+	%\subfigure{\includegraphics[width=0.13\linewidth]{pic/err2_accu.png}}
+	%\subfigure{\includegraphics[width=0.13\linewidth]{pic/err10_diff.png}}
+	%\subfigure{\includegraphics[width=0.13\linewidth]{pic/err3_v.png}}
+	%\subfigure{\includegraphics[width=0.13\linewidth]{pic/err4_n.png}}		\\
+	%\subfigure{\includegraphics[width=0.13\linewidth]{pic/err5_origin.png}}
+	%\subfigure{\includegraphics[width=0.13\linewidth]{pic/err6_appro.png}}
+	%\subfigure{\includegraphics[width=0.13\linewidth]{pic/err7_accu.png}}
+	%\subfigure{\includegraphics[width=0.13\linewidth]{pic/err11_diff.png}}
+	%\subfigure{\includegraphics[width=0.13\linewidth]{pic/err8_v.png}}
+	%\subfigure{\includegraphics[width=0.13\linewidth]{pic/err9_n.png}}		\\
+	%\subfigure{\includegraphics[width=0.13\linewidth]{pic/err12_origin.png}}
+	%\subfigure{\includegraphics[width=0.13\linewidth]{pic/err13_appro.png}}
+	%\subfigure{\includegraphics[width=0.13\linewidth]{pic/err14_accu.png}}
+	%\subfigure{\includegraphics[width=0.13\linewidth]{pic/err17_diff.png}}
+	%\subfigure{\includegraphics[width=0.13\linewidth]{pic/err15_v.png}}
+	%\subfigure{\includegraphics[width=0.13\linewidth]{pic/err16_n.png}}
+	%\caption{Error testing}
+	%\label{fig:error}
+%\end{figure}
+
+%\begin{figure}[htbp]
+	%\centering
+	%\subfigure[Shading of the proposed algorithm]{\includegraphics[width=0.13\linewidth]{pic/uus1.png}}
+	%\subfigure[Shading of UUS algorithm]{\includegraphics[width=0.13\linewidth]{pic/uus2.png}}
+	%\caption{Shading results for the proposed algorithm and UUS algorithm}
+	%\label{fig:uus}
+%\end{figure}
+
+\begin{figure}[htbp]
+\begin{center}
+	\begin{minipage}[c]{0.7\textwidth}
+		\centering
+		\subfigure{\includegraphics[width=0.13\linewidth]{pic/err0_origin.png}}
+		\subfigure{\includegraphics[width=0.13\linewidth]{pic/err1_appro.png}}
+		\subfigure{\includegraphics[width=0.13\linewidth]{pic/err2_accu.png}}
+		\subfigure{\includegraphics[width=0.13\linewidth]{pic/err10_diff.png}}
+		\subfigure{\includegraphics[width=0.13\linewidth]{pic/err3_v.png}}
+		\subfigure{\includegraphics[width=0.13\linewidth]{pic/err4_n.png}}		\\
+		\subfigure{\includegraphics[width=0.13\linewidth]{pic/err5_origin.png}}
+		\subfigure{\includegraphics[width=0.13\linewidth]{pic/err6_appro.png}}
+		\subfigure{\includegraphics[width=0.13\linewidth]{pic/err7_accu.png}}
+		\subfigure{\includegraphics[width=0.13\linewidth]{pic/err11_diff.png}}
+		\subfigure{\includegraphics[width=0.13\linewidth]{pic/err8_v.png}}
+		\subfigure{\includegraphics[width=0.13\linewidth]{pic/err9_n.png}}		\\
+		\subfigure{\includegraphics[width=0.13\linewidth]{pic/err12_origin.png}}
+		\subfigure{\includegraphics[width=0.13\linewidth]{pic/err13_appro.png}}
+		\subfigure{\includegraphics[width=0.13\linewidth]{pic/err14_accu.png}}
+		\subfigure{\includegraphics[width=0.13\linewidth]{pic/err17_diff.png}}
+		\subfigure{\includegraphics[width=0.13\linewidth]{pic/err15_v.png}}
+		\subfigure{\includegraphics[width=0.13\linewidth]{pic/err16_n.png}}
+		\caption{Error testing}
+		\label{fig:error}
+	\end{minipage}
+	\begin{minipage}[c]{0.29\textwidth}
+		\centering
+		\subfigure[Shading of the proposed algorithm]{\includegraphics[width=0.46\linewidth]{pic/uus1.png}}
+		\subfigure[Shading of UUS algorithm]{\includegraphics[width=0.46\linewidth]{pic/uus2.png}}
+		\caption{Shading results for the proposed algorithm and UUS algorithm}
+		\label{fig:uus}
+	\end{minipage}
+\end{center}
+\end{figure}
+
+%The average and maximum errors of the Cube model are given in Table~\ref{tab:error}. According to Figure~\ref{fig:error}
+%and Table~\ref{tab:error}, the geometry and normal approximation errors of the proposed method are relatively small.
+%Therefore, the proposed method is feasible.
+
+\textcolor{red}{
+The vertex error are given in Table~\ref{tab:error_vertex}. We calculate the distance between each tessellation point
+on the results of the proposed method and the corresponding point on the accurate deformation results.
+The ``average error'' in Table~\ref{tab:error_vertex} is the average of all these distances. The ``maximum error'' in
+Table~\ref{tab:error_vertex} is the maximum value of all these distances.
+}
+
+\textcolor{red}{
+The normal error are given in Table~\ref{tab:error_normal}. We calculate the angle between each normal of the
+tessellation point on the results of the proposed method and the corresponding normal on the accurate deforamtion results.
+The ``average error'' and ``maximum error'' in Table~\ref{tab:error_normal} are similar to the above table.
+}
+
+\textcolor{red}{
+The volume error are given in Table~\ref{tab:error_volume}. We calculate the volumes of the results of the proposed method
+and the volumes of the accurate deformation results. The Utah teapot is not listed here because it's not a closed model.
+}
+
+\textcolor{red}{
+According to Figure~\textcolor{red}{\ref{fig:error}} and Table~\ref{tab:error_vertex}-\ref{tab:error_volume}, the
+geometry, normal and volume errors of the proposed method are relatively small. Therefore, the proposed method is
+feasible.
+}
+%\begin{table}[htbp]
+%\begin{center}
+	%\begin{minipage}[c]{0.47\textwidth}
+		%\centering
+		%\caption{Average and maximum error of the proposed method}
+		%\begin{tabular}{lll}
+			%\hline
+				%& Average Error & Maximum error \\
+			%\hline
+				%(d) & 0.00448184 & 0.0274765 \\
+				%%(e) & 0.394331\textdegree & 4.17587\textdegree \\
+				%(e) & 0.394331$^\circ$ & 4.17587$^\circ$ \\
+				%(i) & 0.00297672 & 0.0261029 \\
+				%%(j) & 0.387851\textdegree & 5.23632\textdegree   \\
+				%(j) & 0.387851$^\circ$ & 5.23632$^\circ$   \\
+			%\hline
+		%\end{tabular}
+		%\label{tab:error}
+	%\end{minipage}
+	%\begin{minipage}[c]{0.52\textwidth}
+		%\centering
+		%\caption{Comparison of the times for the smooth FFD and UUS}
+		%\begin{tabular}{lll}
+			%\hline
+				%%number of sub-triangles on each patch & smooth FFD & UUS \\
+				%tessellation density & smooth FFD (ms) & UUS (ms) \\
+			%\hline
+				%100 & 26.418 & 18.120 \\
+				%121 & 27.251 & 21.357 \\
+				%144 & 28.954 & 24.859 \\
+				%169 & 30.894 & 30.383 \\
+				%196 & 31.786 & 34.636 \\
+				%225 & 32.773 & 39.224 \\
+				%256 & 36.183 & 44.120 \\
+			%\hline
+		%\end{tabular}
+		%\label{tab:uus}
+	%\end{minipage}
+%\end{center}
+%\end{table}
+
+\begin{table}[htbp]
+\begin{center}
+	\begin{minipage}[c]{0.47\textwidth}
+%\begin{table}[htbp]
+	
+	%\small
+	\footnotesize
+	\centering
+	\caption{\textcolor{red}{Vertex error of the proposed method}}
+	\begin{tabular}{lll}
+		\hline
+		& \textcolor{red}{Average Error} &\textcolor{red}{Maximum error} \\
+		\hline
+			%\textcolor{red}{Cube in a tri-quadratic B-spline volume} & \textcolor{red}{0.00448184} & \textcolor{red}{0.0274765} \\
+			\textcolor{red}{Row 1 in Fig.~\ref{fig:error}} & \textcolor{red}{0.00448184} & \textcolor{red}{0.0274765} \\
+			\textcolor{red}{Row 2 in Fig.~\ref{fig:error}} & \textcolor{red}{0.00297672} & \textcolor{red}{0.0261029} \\
+			\textcolor{red}{Row 3 in Fig.~\ref{fig:error}} & \textcolor{red}{0.00186862} & \textcolor{red}{0.00906416} \\
+		\hline
+	\end{tabular}
+	\label{tab:error_vertex}
+%\end{table}
+	\end{minipage}
+	\begin{minipage}[c]{0.52\textwidth}
+%\begin{table}[htbp]
+	%\small
+	\footnotesize
+	\centering
+	\caption{\textcolor{red}{Normal error of the proposed method}}
+	\begin{tabular}{lll}
+		\hline
+			& \textcolor{red}{Average Error} & \textcolor{red}{Maximum error} \\
+		\hline
+			\textcolor{red}{Row 1 in Fig.~\ref{fig:error}} & \textcolor{red}{0.394331$^\circ$} & \textcolor{red}{4.17587$^\circ$} \\
+			\textcolor{red}{Row 2 in Fig.~\ref{fig:error}} & \textcolor{red}{0.387851$^\circ$} & \textcolor{red}{5.23632$^\circ$} \\
+			\textcolor{red}{Row 3 in Fig.~\ref{fig:error}} & \textcolor{red}{1.08503$^\circ$} &
+			\textcolor{red}{45.6737$^\circ$} \\
+		\hline
+	\end{tabular}
+	\label{tab:error_normal}
+	\end{minipage}
+\end{center}
+\end{table}
+
+
+
+
+
+
+
+
+\begin{table}[htbp]
+	\centering
+	\footnotesize
+	\caption{\textcolor{red}{Volume error of the proposed method}}
+	\begin{tabular}{lllll}
+		\hline
+			& \textcolor{red}{Degree of the} & \textcolor{red}{Model volume after the} &
+			\multirow{2}{*}{\textcolor{red}{Accurate volume($v$)}} & \multirow{2}{*}{\textcolor{red}{$\left | v'-v
+			\right| / v$}} \\
+			& \textcolor{red}{B-spline volume} & \textcolor{red}{proposed method($v'$)} & \multirow{2}{*}{} & \multirow{2}{*}{} \\
+		\hline
+			%
+			\multirow{2}{*}{\textcolor{red}{cube}} & \textcolor{red}{$2\times2\times2$} & \textcolor{red}{16.641} &
+			\textcolor{red}{16.6449} & \textcolor{red}{0.023107\%} \\
+			\multirow{2}{*}{}			 & \textcolor{red}{$3\times3\times3$} & \textcolor{red}{11.7615} &
+			\textcolor{red}{11.7651} & \textcolor{red}{0.0304927\%} \\
+		\hline
+	\end{tabular}
+	\label{tab:error_volume}
+\end{table}
+
+%\begin{table}[htbp]
+	%\centering
+	%\caption{Average and maximum error of the proposed method}
+	%\begin{tabular}{lll}
+		%\hline
+			%& Average Error & Maximum error \\
+		%\hline
+			%(d) & 0.00448184 & 0.0274765 \\
+			%(e) & 0.394331\textdegree & 4.17587\textdegree \\
+			%(i) & 0.00297672 & 0.0261029 \\
+			%(j) & 0.387851\textdegree & 5.23632\textdegree   \\
+		%\hline
+	%\end{tabular}
+	%\label{tab:error}
+%\end{table}
+
+\subsection{Comparison of the proposed method and a uniformly upsampling method}
+
+%\begin{wrapfigure}{r}{0.6\linewidth}
+	%\centering
+	%\subfigure[Shading of the proposed algorithm]{\includegraphics[width=0.49\linewidth]{pic/uus1.png}}
+	%\subfigure[Shading of UUS algorithm]{\includegraphics[width=0.49\linewidth]{pic/uus2.png}}
+	%\caption{Shading results for the proposed algorithm and UUS algorithm}
+	%\label{fig:uus}
+%\end{wrapfigure}
+
+Similar deformation results can be obtained using a Uniform UpSampling method (similar to the UUS method in
+\cite{Cui13}): step 1: use PN-triangles to replace the triangles in the original object; step 2: uniformly upsample the
+PN-triangles for both the geometry and normal; step 3: deform all sampled geometries and normals to obtain the
+deformation result. Here, the Snail model in Figure~\ref{fig:snail}(a) is adopted again for a time comparison. The degree of
+the B-spline volume is $2\times2\times2$, and the control points is  $5\times5\times5$. As shown in Table~\ref{tab:uus},
+the alternative UUS method is not as efficient as the proposed method when the number of sampled points is relatively
+large.  The rendering times are not considered because they are the same in both algorithms.
+This comparison is consistent with the comparison in \cite{Cui13}.
+\textcolor{red}{The shading result comparison is shown in Figure~\ref{fig:snail}. The difference between
+(a) and (b) is tiny because the Snail model consisits of lots of small triangles.}
+\textcolor{red}{However, if the triangles of the model is large enough, we can easily see that}
+%Furthermore,
+the shading of the UUS algorithm is not as good as the
+proposed algorithm because the former uses a quadratic normal field on each PN-triangle \cite{Vlachos01}. The comparison
+is shown in Figure~\ref{fig:uus}.
+
+\begin{table}[htbp]
+	\centering
+	\footnotesize
+	\caption{Comparison of the times for the smooth FFD and UUS (ms)}
+		\begin{tabular}{llll}
+			\hline
+				%number of sub-triangles on each patch & smooth FFD & UUS \\
+				%tessellation density & smooth FFD (ms) & UUS (ms) & smooth FFD/UUS \\
+				\textcolor{red}{number of sub-triangles} & \multirow{2}{*}{smooth FFD (ms)} & \multirow{2}{*}{UUS (ms)} &
+				\multirow{2}{*}{\textcolor{red}{smooth FFD/UUS}} \\
+				\textcolor{red}{on each patch} & \multirow{2}{*}{} & \multirow{2}{*}{} & \multirow{2}{*}{} \\
+			\hline
+				100 & 26.418 & 18.120 & \textcolor{red}{1.457947} \\
+				121 & 27.251 & 21.357 & \textcolor{red}{1.275975} \\
+				144 & 28.954 & 24.859 & \textcolor{red}{1.164729} \\
+				169 & 30.894 & 30.383 & \textcolor{red}{1.016819} \\
+				196 & 31.786 & 34.636 & \textcolor{red}{0.917716} \\
+				225 & 32.773 & 39.224 & \textcolor{red}{0.835534} \\
+				256 & 36.183 & 44.120 & \textcolor{red}{0.820104} \\
+			\hline
+		\end{tabular}
+	\label{tab:uus}
+\end{table}
+
+%\begin{wrapfigure}{r}{0.3\textwidth}
+%\begin{figure}[htbp]
+	%\centering
+	%\subfigure[Shading of the proposed algorithm]{\includegraphics[width=0.13\linewidth]{pic/uus1.png}}
+	%\subfigure[Shading of UUS algorithm]{\includegraphics[width=0.13\linewidth]{pic/uus2.png}}
+	%\caption{Shading results for the proposed algorithm and UUS algorithm}
+	%\label{fig:uus}
+%\end{figure}
+%\end{wrapfigure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Conclusion and \textcolor{red}{Future Work}}
+
+In this paper, we proposed a triangular B\'ezier patch-based algorithm that addresses the unsmoothness of the normal
+field and the geometry artifact problems in the accurate FFD. The algorithm produces a high-quality deformation result
+and preserves sharp features. Our algorithm is a highly parallellizable GPU algorithm and is able to deform a relatively
+large-scale model in real time.
+
+The approach can still be improved in several aspects. For example, the uniform tessellation of the resulting triangular
+B\'ezier patch will generate many unnecessary small triangles. An adaptive tessellation algorithm is an alternative to
+our method. It is not easy to implement such an adaptive algorithm on a GPU. Using tessellation shader is a reasonable
+choice.
+
+\section{\textcolor{red}{Acknowledgement}}
+
+Omitted for review.
+
+\section*{References}
+
+\bibliography{MyBib}
+
+\end{document}

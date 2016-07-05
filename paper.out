@@ -1,0 +1,15 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{Related Work}{}% 2
+\BOOKMARK [1][-]{section.3}{Overview of Accurate FFD in Terms of Triangular B\351zier Patches}{}% 3
+\BOOKMARK [1][-]{section.4}{Clip Triangle}{}% 4
+\BOOKMARK [2][-]{subsection.4.1}{The overview of the clipping algorithm}{section.4}% 5
+\BOOKMARK [2][-]{subsection.4.2}{the number of iterations}{section.4}% 6
+\BOOKMARK [2][-]{subsection.4.3}{Some discuss of l}{section.4}% 7
+\BOOKMARK [2][-]{subsection.4.4}{Implement in GPU}{section.4}% 8
+\BOOKMARK [1][-]{section.5}{OpenGL compute shader}{}% 9
+\BOOKMARK [1][-]{section.6}{Implementation Results and Comparison}{}% 10
+\BOOKMARK [2][-]{subsection.6.1}{Comparison of the rendering results}{section.6}% 11
+\BOOKMARK [2][-]{subsection.6.2}{Comparison of efficiencies}{section.6}% 12
+\BOOKMARK [2][-]{subsection.6.3}{Approximation error tests}{section.6}% 13
+\BOOKMARK [1][-]{section.7}{Conclusion and Future Work}{}% 14
+\BOOKMARK [1][-]{section.8}{Acknowledgement}{}% 15
