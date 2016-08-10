@@ -93,7 +93,9 @@ efficient to meet the real-time or interactive demands of large-scale models. Ho
 on the linear geometry, without considering the normal of the model.}
 Smooth FFD (Cui and Feng 2015 ) is proposed by Cui and Feng (2015), which adjust the deformed the results of above work according to the normal information of the model so that to obtain a smooth free-form deformation with visually plausible smooth geometry and shading. However, Smooth FFD will generate degenerative triangles and narrow triangle which will do damage accuracy and efficiency in many areas such as CAD, PDE-based computation and so on. And when it comes to generality, Smooth FFD is implemented by CUDA which will limit their whole framework to NVIDIA hardware.
 
-Therefore, we propose a method which is based Smooth FFD to address the above problems.
+On the other hand, there're more and more graphic applications on the mobile platform. Mobile platform will develop so further that it not only show the 3D things, but also has the demand to edit the 3D model.\cite{mobile1}, \cite{mobile2} already do some work on mobile platform. We want to port a variant FFD method to mobile phone.
+
+Therefore, we propose a method which is based Smooth FFD which can run on multi-platform including mobile platform to address the above problems.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
