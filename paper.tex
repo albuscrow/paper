@@ -38,7 +38,7 @@
 \address{State Key Lab of CAD\&CG, Zhejiang University, China}
 
 \begin{abstract}
-In an smooth free-form deformation~\cite{Cui15} of a polygonal object, the linear geometry, e.g., triangles or planar polygons will be subdivided against a knot box, but it will produce pathological triangles which will contribute to many problem about efficiency and robustness. On the other hand, cui utilize the parallel computing power of the GPU via CUDA, which is limited to NVIDIA hardware. Thus, his method can not be used on neithor AMD GPU nor mobile platform. In this paper, we propose an approach which will be used to clip the original model to avoid pathological case. Moreover, we implement the whole framework of smooth FFD with OpenGL compute shader in order to make it more general. Our subdivision method will produce sub-triangles as regular as possible, but cannot guarantee that each sub-triangle lies in a knot box.Accordingly the method will introduce acceptable errors. However, the trade-off is worthwhile in accordance with Error analysis. We also extend the deformation framework to the mobile phone by the aid of the good across-platfor of OpenGL. 
+In an smooth free-form deformation~\cite{Cui15} of a polygonal object, the linear geometry, e.g., triangles or planar polygons will be subdivided against a knot box, but it will produce pathological triangles which will contribute to many problem about efficiency and robustness. On the other hand, cui utilize the parallel computing power of the GPU via CUDA, which is limited to NVIDIA hardware. Thus, his method can not be used on neithor AMD GPU nor mobile platform. In this paper, we propose an approach which will be used to clip the original model to avoid pathological case. Moreover, we implement the whole framework of smooth FFD with OpenGL compute shader in order to make it more general. Our subdivision method will produce sub-triangles as regular as possible, but cannot guarantee that each sub-triangle lies in a knot box.Accordingly the method will introduce acceptable errors. However, the trade-off is worthwhile in accordance with Error analysis. We also extend the deformation framework to the mobile phone by the aid of the good across-platfor of OpenGL.
 \end{abstract}
 
 \begin{keyword}
@@ -56,6 +56,8 @@ The main contributions of the paper are summarized as follows:
     \item A new clip method are proposed to get more regular sub-triangles.
     \item Implement the framework by OpenGL compute shader for better applicability and generality.
 \end{itemize}
+
+What's more, graphics applications is move to mobile platform due to the development of mobile hardware. So we also port our work on Android platform. It needs little addition effort thanks to the portable OpenGL.
 
 \section{Related Work}\label{sec:related}
 
