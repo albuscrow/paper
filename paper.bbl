@@ -116,34 +116,13 @@ S.~Hahmann, G.-P. Bonneau, S.~Barbier, G.~Elber, H.~Hagen, {Volume-preserving
   FFD for programmable graphics hardware}, The Visual Computer 28 (2012)
   231--245, 10.1007/s00371-011-0608-5.
 
-\bibitem{Liu14}
-S.~Liu, A.~Jacobson, Y.~Gingold, {Skinning Cubic B\'ezier Splines and
-  Catmull-Clark Subdivision Surfaces}, ACM Transactions on Graphics (TOG)
-  33~(6).
+\bibitem{mobile1}
+I.~Rakkolainen, T.~Vainio, A 3d city info for mobile users, Computers \&
+  Graphics 25~(4) (2001) 619--625.
 
-\bibitem{Vlachos01}
-A.~Vlachos, J.~Peters, C.~Boyd, J.~L. Mitchell,
-  \href{http://doi.acm.org/10.1145/364338.364387}{{Curved PN Triangles}}, in:
-  Proceedings of the 2001 Symposium on Interactive 3D Graphics, I3D '01, ACM,
-  New York, NY, USA, 2001, pp. 159--166.
-\newblock \href {http://dx.doi.org/10.1145/364338.364387}
-  {\path{doi:10.1145/364338.364387}}.
-\newline\urlprefix\url{http://doi.acm.org/10.1145/364338.364387}
-
-\bibitem{Boubekeur08}
-T.~Boubekeur, M.~Alexa,
-  \href{http://doi.acm.org/10.1145/1409060.1409094}{{Phong Tessellation}}, ACM
-  Trans. Graph. 27~(5) (2008) 141:1--141:5.
-\newblock \href {http://dx.doi.org/10.1145/1409060.1409094}
-  {\path{doi:10.1145/1409060.1409094}}.
-\newline\urlprefix\url{http://doi.acm.org/10.1145/1409060.1409094}
-
-\bibitem{Farin02}
-G.~Farin, {Curves and Surfaces for CAGD: A Practical Guide}, 5th Edition,
-  Morgan Kaufmann Publishers Inc., San Francisco, CA, USA, 2002.
-
-\bibitem{cublas}
-NVIDIA, {cuBLAS}, nvidia developer
-  zone.\url{https://developer.nvidia.com/cublas}.
+\bibitem{mobile2}
+F.~Lamberti, A.~Sanna, A streaming-based solution for remote visualization of
+  3d graphics on mobile devices, IEEE transactions on visualization and
+  computer graphics 13~(2) (2007) 247--260.
 
 \end{thebibliography}
