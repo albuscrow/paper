@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016/Arch Linux) (preloaded format=pdflatex 2016.8.14)  14 AUG 2016 17:12
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016/Arch Linux) (preloaded format=pdflatex 2016.8.14)  15 AUG 2016 20:43
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -810,76 +810,86 @@ r_e.png> <./pic/ln_bear.png> <./pic/ln_r_bear.png>]
 <pic/ship_ori.png, id=274, 473.3685pt x 473.3685pt>
 File: pic/ship_ori.png Graphic file (type png)
  <use pic/ship_ori.png>
-Package pdftex.def Info: pic/ship_ori.png used on input line 260.
-(pdftex.def)             Requested size: 60.65343pt x 60.65163pt.
+Package pdftex.def Info: pic/ship_ori.png used on input line 259.
+(pdftex.def)             Requested size: 111.19995pt x 111.19827pt.
 
 <pic/ship_cym.png, id=275, 473.3685pt x 473.3685pt>
 File: pic/ship_cym.png Graphic file (type png)
  <use pic/ship_cym.png>
-Package pdftex.def Info: pic/ship_cym.png used on input line 261.
-(pdftex.def)             Requested size: 60.65343pt x 60.65163pt.
+Package pdftex.def Info: pic/ship_cym.png used on input line 260.
+(pdftex.def)             Requested size: 111.19995pt x 111.19827pt.
 
 <pic/ship_ac.png, id=276, 473.3685pt x 473.3685pt>
 File: pic/ship_ac.png Graphic file (type png)
  <use pic/ship_ac.png>
-Package pdftex.def Info: pic/ship_ac.png used on input line 262.
-(pdftex.def)             Requested size: 60.65343pt x 60.65163pt.
+Package pdftex.def Info: pic/ship_ac.png used on input line 261.
+(pdftex.def)             Requested size: 111.19995pt x 111.19827pt.
 
 <pic/ship_ac_tex.png, id=277, 473.3685pt x 473.3685pt>
 File: pic/ship_ac_tex.png Graphic file (type png)
 
 <use pic/ship_ac_tex.png>
-Package pdftex.def Info: pic/ship_ac_tex.png used on input line 263.
-(pdftex.def)             Requested size: 60.65343pt x 60.65163pt.
+Package pdftex.def Info: pic/ship_ac_tex.png used on input line 262.
+(pdftex.def)             Requested size: 111.19995pt x 111.19827pt.
 
 <pic/rabbit_ori.png, id=278, 473.3685pt x 473.3685pt>
 File: pic/rabbit_ori.png Graphic file (type png)
  <use pic/rabbit_ori.png>
-Package pdftex.def Info: pic/rabbit_ori.png used on input line 275.
-(pdftex.def)             Requested size: 71.35312pt x 71.3489pt.
+Package pdftex.def Info: pic/rabbit_ori.png used on input line 274.
+(pdftex.def)             Requested size: 112.12608pt x 112.12282pt.
 
 <pic/rabbit_cym.png, id=279, 473.3685pt x 473.3685pt>
 File: pic/rabbit_cym.png Graphic file (type png)
  <use pic/rabbit_cym.png>
-Package pdftex.def Info: pic/rabbit_cym.png used on input line 276.
-(pdftex.def)             Requested size: 71.35312pt x 71.3489pt.
+Package pdftex.def Info: pic/rabbit_cym.png used on input line 275.
+(pdftex.def)             Requested size: 112.12608pt x 112.12282pt.
 
 <pic/rabbit_ac.png, id=280, 473.3685pt x 473.3685pt>
 File: pic/rabbit_ac.png Graphic file (type png)
  <use pic/rabbit_ac.png>
-Package pdftex.def Info: pic/rabbit_ac.png used on input line 277.
-(pdftex.def)             Requested size: 71.35312pt x 71.3489pt.
+Package pdftex.def Info: pic/rabbit_ac.png used on input line 276.
+(pdftex.def)             Requested size: 112.12608pt x 112.12282pt.
 
 <pic/rabbit_ac_tex.png, id=281, 473.3685pt x 473.3685pt>
 File: pic/rabbit_ac_tex.png Graphic file (type png)
 
 <use pic/rabbit_ac_tex.png>
-Package pdftex.def Info: pic/rabbit_ac_tex.png used on input line 278.
-(pdftex.def)             Requested size: 71.35312pt x 71.3489pt.
+Package pdftex.def Info: pic/rabbit_ac_tex.png used on input line 277.
+(pdftex.def)             Requested size: 112.12608pt x 112.12282pt.
  [8 <./pic/ship_ori.png> <./pic/ship_cym.png> <./pic/ship_ac.png> <./pic/ship_a
 c_tex.png> <./pic/rabbit_ori.png> <./pic/rabbit_cym.png> <./pic/rabbit_ac.png> 
 <./pic/rabbit_ac_tex.png>]
 <pic/snail1.png, id=312, 738.76pt x 592.2125pt>
 File: pic/snail1.png Graphic file (type png)
  <use pic/snail1.png>
-Package pdftex.def Info: pic/snail1.png used on input line 294.
+Package pdftex.def Info: pic/snail1.png used on input line 293.
 (pdftex.def)             Requested size: 210.59857pt x 168.81845pt.
 
-<pic/snail2.png, id=313, 738.76pt x 592.2125pt>
+<pic/snail2.png, id=315, 738.76pt x 592.2125pt>
 File: pic/snail2.png Graphic file (type png)
  <use pic/snail2.png>
-Package pdftex.def Info: pic/snail2.png used on input line 295.
+Package pdftex.def Info: pic/snail2.png used on input line 294.
 (pdftex.def)             Requested size: 210.59857pt x 168.81845pt.
 
 
 Package caption Warning: The option `hypcap=true' will be ignored for this
-(caption)                particular \caption on input line 303.
+(caption)                particular \caption on input line 302.
 See the caption package documentation for explanation.
+
+
+Overfull \hbox (10.32257pt too wide) in paragraph at lines 299--315
+[]$[]$ 
+ []
 
 
 Package caption Warning: The option `hypcap=true' will be ignored for this
-(caption)                particular \caption on input line 321.
+(caption)                particular \caption on input line 319.
 See the caption package documentation for explanation.
+
+
+Overfull \hbox (10.32257pt too wide) in paragraph at lines 316--338
+[]$[]$ 
+ []
 
 
 LaTeX Warning: Reference `fig:error' on page 9 undefined on input line 352.
@@ -935,11 +945,11 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 393.
 Here is how much of TeX's memory you used:
  9055 strings out of 493014
  132647 string characters out of 6139325
- 234265 words of memory out of 5000000
+ 234263 words of memory out of 5000000
  12305 multiletter control sequences out of 15000+600000
  17762 words of font info for 69 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 44i,12n,49p,1118b,497s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 44i,12n,55p,1118b,497s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/
 texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb></usr/share/texmf-dist/font
 s/type1/public/amsfonts/cmextra/cmex8.pfb></usr/share/texmf-dist/fonts/type1/pu
@@ -957,10 +967,10 @@ pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share
 /texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texmf-dist/fo
 nts/type1/public/amsfonts/cm/cmti8.pfb></usr/share/texmf-dist/fonts/type1/publi
 c/amsfonts/cm/cmtt8.pfb>
-Output written on paper.pdf (11 pages, 3259695 bytes).
+Output written on paper.pdf (11 pages, 3259967 bytes).
 PDF statistics:
- 443 PDF objects out of 1000 (max. 8388607)
- 337 compressed objects within 4 object streams
+ 445 PDF objects out of 1000 (max. 8388607)
+ 338 compressed objects within 4 object streams
  104 named destinations out of 1000 (max. 500000)
  306 words of extra memory for PDF output out of 10000 (max. 10000000)
 

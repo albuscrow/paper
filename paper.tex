@@ -234,28 +234,27 @@ The above algorithm has good result, while it is flexible for different accuracy
 Hence, we first compute all possible cases of the clipping of triangles, and restore the result in a table. When we really clip a triangle, we can get a pattern from the table according the size of the triangle and the factor $l$. We trade space for time and the cost of space is reasonable. Of Course, Our GPU clipping triangle algorithm will be faster than the Smooth FFD. The comparison of two algorithm can be see in \ref{tab:compare_pre}.
 
 \section{OpenGL compute shader}
-CUDA which is used for implement Smooth FFD is a parallel computing platform and programming model invented by NVIDIA. It enables dramatic increases in computing performance by harnessing the power of the graphics processing unit (GPU). Nevertheless, only on the Nvidia GPU can CUDA run. It lead to the compatibility problems in other desktop gpu as well as mobile platform which is rapid developing in recent years.
+CUDA which is used for implement Smooth FFD is a parallel computing platform and programming model invented by NVIDIA. It enables dramatic increases in computing performance by harnessing the power of the graphics processing unit (GPU). Nevertheless, only on the NVIDIA GPU can CUDA runs. It lead to the compatibility problems in other desktop GPU as well as mobile platform which is rapid developing in recent years.
 
-While Compute Shader is a OpenGL Shader Stage that is used entirely for computing arbitrary information. It is available in every platform as long as it is surpport OpenGL 4.3.
+While Compute Shader is an OpenGL Shader Stage that is used entirely for computing arbitrary information. It is available in every platform as long as it supports OpenGL 4.3.
 
-For this reason, we implement our improved method with OpenGL Compute Shader. 
+For this reason, we implement our improved method with OpenGL Compute Shader.
 
 \section{Implementation Results and Comparison}
 
-The proposed method is implemented on a PC with an Intel Core i7 4710MQ CPU@2.50GHz, 8 GB of main memory and an NVIDIA GeForce GT 730M GPU. The operating system is Arch Linux x86\_64. The CPU and GPU components of our method are written using python and OpenGL compute shader, respectively. 
+The proposed method is implemented on a PC with an Intel Core i7 4710MQ CPU@2.50GHz, 8 GB of main memory and an NVIDIA GeForce GT 730M GPU. The operating system is Arch Linux x86\_64. The CPU and GPU components of our method are written using python and OpenGL compute shader, respectively.
 
 We will compare our proposed improved smooth FFD with \cite{Cui15} from the aspects of rendering result, efficiency and approximation errors.
 
 \subsection{Comparison of the rendering results}
 \label{sec:comparison_of_rendering}
 
-The deformation results are shown in Figure \ref{fig:ship} and \ref{fig:rabbit}. Each triangular B\'ezier patch is
-tessellated into 100 triangles. There are 4 sub-figures in each of the 2 examples: (a) is the original model; (b) is the
-result of smooth FFD \cite{Cui13, Cui14}; (c) is the result of improved smooth FFD; (d) is the textured shading effect of (c).
+The deformation results are shown in Figure \ref{fig:ship} and \ref{fig:rabbit}. Each triangular B\'ezier patch is tessellated into 100 triangles. There are 4 sub-figures in each of the 2 examples: (a) is the original model; (b) is the result of smooth FFD \cite{Cui13, Cui14}; (c) is the result of improved smooth FFD; (d) is the textured shading effect of (c).
+
 
 \begin{figure}[htbp]
 \begin{center}
-	\begin{minipage}[l]{0.54\textwidth}
+	\begin{minipage}[l]{0.99\textwidth}
 		\centering
 		\subfloat[]{\includegraphics[width=0.24\linewidth]{pic/ship_ori.png}}
 		\subfloat[]{\includegraphics[width=0.24\linewidth]{pic/ship_cym.png}}
@@ -270,7 +269,7 @@ result of smooth FFD \cite{Cui13, Cui14}; (c) is the result of improved smooth F
 
 \begin{figure}[htbp]
 \begin{center}
-	\begin{minipage}[c]{0.63\textwidth}
+	\begin{minipage}[c]{0.99\textwidth}
 		\centering
 		\subfloat[]{\includegraphics[width=0.242\linewidth]{pic/rabbit_ori.png}}
 		\subfloat[]{\includegraphics[width=0.242\linewidth]{pic/rabbit_cym.png}}
@@ -287,17 +286,17 @@ These figures illustrate that the results obtained with smooth FFD and improved 
 
 \subsection{Comparison of efficiencies}
 
-The efficiencies obtained with improve smooth FFD and \cite{Cui15} are compared in Table \ref{tab:compare_pre} and Table \ref{tab:compare_deform}. The model we use is shown in Figure~\ref{fig:snail}; this model has 46,742 faces. As in Section \ref{sec:comparison_of_rendering}, each triangular B\'ezier patch is tessellated into 100 sub-triangles. The degree of the B-spline volume is $2\times2\times2$, with $5\times5\times5$ control points. Table\ref{tab:compare_pre} illustrates that the speed of our method is faster than that of \cite{Cui15} due to clip triangle by GPU which \cite{Cui15} do it by CPU. In the deformation stage, the two method have almost the same efficiencies. The proposed method is sufficiently fast to handle large models in real time.
+The efficiencies obtained with improve smooth FFD and \cite{Cui15} are compared in Table \ref{tab:compare_pre} and Table \ref{tab:compare_deform}. The model we use is shown in Figure \ref{fig:snail}. This model has 46,742 faces. As in Section \ref{sec:comparison_of_rendering}, each triangular B\'ezier patch is tessellated into 100 sub-triangles. The degree of the B-spline volume is $2\times2\times2$, with $5\times5\times5$ control points. Table\ref{tab:compare_pre} illustrates that the speed of our method is faster than that of \cite{Cui15} due to clip triangle by GPU which \cite{Cui15} do it by CPU. In the deformation stage, the total time of all stages of Cui's method is 65.464ms. Our method just has an overall run time, 67.419ms, because we implement all of the stages in the same shader while there's not a suitable method to measure time inside a shader. the two method have almost the same efficiencies. The proposed method is sufficiently fast to handle large models in real time.
 
 \begin{figure}
   \centering
-  \subfloat[][]{\includegraphics[width=.45\textwidth]{pic/snail1}}\hfill
-  \subfloat[][]{\includegraphics[width=.45\textwidth]{pic/snail2}}\hfill
-  \caption{Relationship of l and sub-triangles number}
+  \subfloat[][rendering result of Cui et al.\cite{Cui15}]{\includegraphics[width=.45\textwidth]{pic/snail1}}\hfill
+  \subfloat[][rendering result of our mothod]{\includegraphics[width=.45\textwidth]{pic/snail2}}\hfill
+  \caption{Model used by comparison of efficiencies}
   \label{fig:snail}
 \end{figure}
 
-\begin{minipage}[c]{0.7\textwidth} 
+\begin{minipage}[c]{0.99\textwidth} 
   \centering
   \footnotesize
     \tabcaption{Comparison of the efficiencies of our method and \cite{Cui15}(pre-compute stage)}
@@ -314,8 +313,7 @@ The efficiencies obtained with improve smooth FFD and \cite{Cui15} are compared 
     \label{tab:compare_pre}
 \end{minipage} 
 
-
-\begin{minipage}[c]{0.7\textwidth} 
+\begin{minipage}[c]{0.99\textwidth} 
   \centering
   \footnotesize
     \tabcaption{Comparison of the efficiencies of our method and \cite{Cui15}(deform stage)}
@@ -336,9 +334,11 @@ The efficiencies obtained with improve smooth FFD and \cite{Cui15} are compared 
   	\hline
   \end{tabular}
   \label{tab:compare_deform}
-\end{minipage} 
+\end{minipage}
 
 \subsection{Approximation error tests}
+not finish!!!!!!!!!!!!!!!!!!!!
+
 In the smooth FFD, both the geometry and normal are obtained approximately via constrained fitting. Thus, there
 are approximation errors in the geometry and normal compared with the accurate FFD. Since the smooth parts of a
 polygonal object can be regarded as a piecewise linear approximation of a potentially smooth shape, which is unknown in
