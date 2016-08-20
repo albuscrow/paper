@@ -337,6 +337,59 @@ The efficiencies obtained with improve smooth FFD and \cite{Cui15} are compared 
 \end{minipage}
 
 \subsection{Approximation error tests}
+
+\begin{figure}
+	\centering
+    \subfloat[][Original model]{
+		\includegraphics[width=0.49\linewidth]{pic/cube0.png}
+		\includegraphics[width=0.49\linewidth]{pic/teapot0.png}
+	}\par
+	\subfloat[][Improved Smooth FFD results of (a)]{
+		\includegraphics[width=0.49\linewidth]{pic/cube2.png}
+		\includegraphics[width=0.49\linewidth]{pic/teapot2.png}
+	}\par
+
+\end{figure}
+
+\begin{figure}
+    \ContinuedFloat
+	\subfloat[][Smooth FFD results of (b)]{
+		\includegraphics[width=0.49\linewidth]{pic/cube3.png}
+		\includegraphics[width=0.49\linewidth]{pic/teapot3.png}
+	}\par
+	\subfloat[][Accurate FFD results of (c)]{
+		\includegraphics[width=0.49\linewidth]{pic/cube1.png}
+		\includegraphics[width=0.49\linewidth]{pic/teapot1.png}
+	}\par
+
+\end{figure}
+
+\begin{figure}
+    \ContinuedFloat
+	\subfloat[][Improved Smooth FFD's Geometry errors]{
+		\includegraphics[width=0.49\linewidth]{pic/cube4.png}
+		\includegraphics[width=0.49\linewidth]{pic/teapot4.png}
+	}\par
+	\subfloat[][Improved Smooth FFD's Normal errors]{
+		\includegraphics[width=0.49\linewidth]{pic/cube5.png}
+		\includegraphics[width=0.49\linewidth]{pic/teapot5.png}
+	}\par
+\end{figure}
+
+\begin{figure}
+    \ContinuedFloat
+	\subfloat[][Smooth FFD's Geometry errors]{
+		\includegraphics[width=0.49\linewidth]{pic/cube6.png}
+		\includegraphics[width=0.49\linewidth]{pic/teapot6.png}
+	}\par
+	\subfloat[][Smooth FFD's Normal errors]{
+		\includegraphics[width=0.49\linewidth]{pic/cube7.png}
+		\includegraphics[width=0.49\linewidth]{pic/teapot7.png}
+	}
+	\caption{Error testing}
+	\label{fig:error}
+\end{figure}
+
 not finish!!!!!!!!!!!!!!!!!!!!
 
 In the smooth FFD, both the geometry and normal are obtained approximately via constrained fitting. Thus, there
