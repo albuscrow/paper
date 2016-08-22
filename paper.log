@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016/Arch Linux) (preloaded format=pdflatex 2016.8.16)  21 AUG 2016 20:18
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016/Arch Linux) (preloaded format=pdflatex 2016.8.16)  22 AUG 2016 21:48
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -891,143 +891,87 @@ Overfull \hbox (10.32257pt too wide) in paragraph at lines 316--338
 []$[]$ 
  []
 
-<pic/cube0.png, id=324, 636.6987pt x 636.6987pt>
-File: pic/cube0.png Graphic file (type png)
- <use pic/cube0.png>
-Package pdftex.def Info: pic/cube0.png used on input line 346.
-(pdftex.def)             Requested size: 229.32257pt x 229.31822pt.
+<pic/error0.png, id=324, 926.5014pt x 351.2322pt>
+File: pic/error0.png Graphic file (type png)
+ <use pic/error0.png>
+Package pdftex.def Info: pic/error0.png used on input line 344.
+(pdftex.def)             Requested size: 463.32257pt x 175.64781pt.
 
-<pic/teapot0.png, id=325, 636.6987pt x 636.6987pt>
-File: pic/teapot0.png Graphic file (type png)
- <use pic/teapot0.png>
-Package pdftex.def Info: pic/teapot0.png used on input line 346.
-(pdftex.def)             Requested size: 229.32257pt x 229.31822pt.
+<pic/error2.png, id=325, 926.5014pt x 351.2322pt>
+File: pic/error2.png Graphic file (type png)
+ <use pic/error2.png>
+Package pdftex.def Info: pic/error2.png used on input line 346.
+(pdftex.def)             Requested size: 463.32257pt x 175.64781pt.
 
-Overfull \hbox (0.64513pt too wide) in paragraph at lines 346--346
- [][] 
- []
+<pic/error3.png, id=326, 926.5014pt x 351.2322pt>
+File: pic/error3.png Graphic file (type png)
+ <use pic/error3.png>
+Package pdftex.def Info: pic/error3.png used on input line 348.
+(pdftex.def)             Requested size: 463.32257pt x 175.64781pt.
 
-<pic/cube2.png, id=326, 636.6987pt x 636.6987pt>
-File: pic/cube2.png Graphic file (type png)
- <use pic/cube2.png>
-Package pdftex.def Info: pic/cube2.png used on input line 350.
-(pdftex.def)             Requested size: 229.32257pt x 229.31822pt.
+<pic/error1.png, id=327, 926.5014pt x 351.2322pt>
+File: pic/error1.png Graphic file (type png)
+ <use pic/error1.png>
+Package pdftex.def Info: pic/error1.png used on input line 354.
+(pdftex.def)             Requested size: 463.32257pt x 175.64781pt.
 
-<pic/teapot2.png, id=327, 636.6987pt x 636.6987pt>
-File: pic/teapot2.png Graphic file (type png)
- <use pic/teapot2.png>
-Package pdftex.def Info: pic/teapot2.png used on input line 350.
-(pdftex.def)             Requested size: 229.32257pt x 229.31822pt.
-
-Overfull \hbox (0.64513pt too wide) in paragraph at lines 350--350
- [][] 
- []
-
-<pic/cube3.png, id=328, 636.6987pt x 636.6987pt>
-File: pic/cube3.png Graphic file (type png)
- <use pic/cube3.png>
-Package pdftex.def Info: pic/cube3.png used on input line 359.
-(pdftex.def)             Requested size: 229.32257pt x 229.31822pt.
-
-<pic/teapot3.png, id=329, 636.6987pt x 636.6987pt>
-File: pic/teapot3.png Graphic file (type png)
- <use pic/teapot3.png>
-Package pdftex.def Info: pic/teapot3.png used on input line 359.
-(pdftex.def)             Requested size: 229.32257pt x 229.31822pt.
-
-Overfull \hbox (0.64513pt too wide) in paragraph at lines 359--359
-[][] 
- []
-
-<pic/cube1.png, id=330, 636.6987pt x 636.6987pt>
-File: pic/cube1.png Graphic file (type png)
- <use pic/cube1.png>
-Package pdftex.def Info: pic/cube1.png used on input line 363.
-(pdftex.def)             Requested size: 229.32257pt x 229.31822pt.
-
-<pic/teapot1.png, id=331, 636.6987pt x 636.6987pt>
-File: pic/teapot1.png Graphic file (type png)
- <use pic/teapot1.png>
-Package pdftex.def Info: pic/teapot1.png used on input line 363.
-(pdftex.def)             Requested size: 229.32257pt x 229.31822pt.
-
-Overfull \hbox (0.64513pt too wide) in paragraph at lines 363--363
-[][] 
- []
-
-<pic/error4.png, id=332, 926.5014pt x 353.4003pt>
+<pic/error4.png, id=328, 926.5014pt x 353.4003pt>
 File: pic/error4.png Graphic file (type png)
  <use pic/error4.png>
-Package pdftex.def Info: pic/error4.png used on input line 371.
+Package pdftex.def Info: pic/error4.png used on input line 356.
 (pdftex.def)             Requested size: 463.32257pt x 176.73206pt.
 
-Overfull \hbox (1.98923pt too wide) in paragraph at lines 371--371
-[][] 
- []
-
-<pic/error5.png, id=333, 926.5014pt x 353.4003pt>
+<pic/error5.png, id=329, 926.5014pt x 353.4003pt>
 File: pic/error5.png Graphic file (type png)
  <use pic/error5.png>
-Package pdftex.def Info: pic/error5.png used on input line 374.
+Package pdftex.def Info: pic/error5.png used on input line 358.
 (pdftex.def)             Requested size: 463.32257pt x 176.73206pt.
 
-Overfull \hbox (1.98923pt too wide) in paragraph at lines 374--374
-[][] 
- []
-
-<pic/error6.png, id=334, 926.5014pt x 353.4003pt>
+<pic/error6.png, id=330, 926.5014pt x 353.4003pt>
 File: pic/error6.png Graphic file (type png)
  <use pic/error6.png>
-Package pdftex.def Info: pic/error6.png used on input line 381.
+Package pdftex.def Info: pic/error6.png used on input line 364.
 (pdftex.def)             Requested size: 463.32257pt x 176.73206pt.
 
-Overfull \hbox (1.98923pt too wide) in paragraph at lines 381--381
-[][] 
- []
-
-<pic/error7.png, id=335, 926.5014pt x 353.4003pt>
+<pic/error7.png, id=331, 926.5014pt x 353.4003pt>
 File: pic/error7.png Graphic file (type png)
  <use pic/error7.png>
-Package pdftex.def Info: pic/error7.png used on input line 384.
+Package pdftex.def Info: pic/error7.png used on input line 366.
 (pdftex.def)             Requested size: 463.32257pt x 176.73206pt.
+ [9 <./pic/snail1.png> <./pic/snail2.png>] [10 <./pic/error0.png> <./pic/error2
+.png> <./pic/error3.png>] [11 <./pic/error1.png> <./pic/error4.png> <./pic/erro
+r5.png>]
+[12 <./pic/error6.png> <./pic/error7.png>]
 
-Overfull \hbox (1.98923pt too wide) in paragraph at lines 384--385
-[][] 
+LaTeX Warning: Reference `tab:error_vertex' on page 13 undefined on input line 
+385.
+
+
+LaTeX Warning: Reference `tab:error_volume' on page 13 undefined on input line 
+385.
+
+
+Overfull \hbox (11.9145pt too wide) in paragraph at lines 395--404
+ [][] 
  []
 
-[9 <./pic/snail1.png> <./pic/snail2.png>] [10 <./pic/cube0.png> <./pic/teapot0.
-png> <./pic/cube2.png> <./pic/teapot2.png>] [11 <./pic/cube3.png> <./pic/teapot
-3.png> <./pic/cube1.png> <./pic/teapot1.png>] [12 <./pic/error4.png> <./pic/err
-or5.png>] [13 <./pic/error6.png> <./pic/error7.png>]
 
-LaTeX Warning: Reference `tab:error_vertex' on page 14 undefined on input line 
-407.
+LaTeX Warning: Reference `tab:error_vertex' on page 13 undefined on input line 
+456.
 
-
-LaTeX Warning: Reference `tab:error_volume' on page 14 undefined on input line 
-407.
-
-
-LaTeX Warning: Reference `tab:error_vertex' on page 14 undefined on input line 
-411.
-
-
-LaTeX Warning: Reference `tab:error_volume' on page 14 undefined on input line 
-411.
-
-(./paper.bbl [14]
+(./paper.bbl [13]
 Underfull \hbox (badness 2799) in paragraph at lines 100--103
 []\OT1/cmr/m/n/8 C. Chua, U. Neu-mann, Hardware-Accelerated Free-Form De-for-ma
 -tion, in: Pro-ceed-ings of the ACM SIG-
  []
 
 )
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 442.
- [15]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 442.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 488.
+ [14]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 488.
  (./paper.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 442.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 442.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 488.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 488.
 Package rerunfilecheck Info: File `paper.out' has not changed.
 (rerunfilecheck)             Checksum: 5B06BF9E55E74F4B5616577F821E54C8;1011.
 
@@ -1038,13 +982,16 @@ LaTeX Font Warning: Size substitutions with differences
 
 LaTeX Warning: There were undefined references.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 442.
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 488.
  ) 
 Here is how much of TeX's memory you used:
- 9135 strings out of 493013
- 133956 string characters out of 6139317
+ 9117 strings out of 493013
+ 133659 string characters out of 6139317
  234398 words of memory out of 5000000
- 12358 multiletter control sequences out of 15000+600000
+ 12344 multiletter control sequences out of 15000+600000
  17762 words of font info for 69 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  44i,12n,55p,1118b,497s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -1065,10 +1012,10 @@ pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share
 /texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texmf-dist/fo
 nts/type1/public/amsfonts/cm/cmti8.pfb></usr/share/texmf-dist/fonts/type1/publi
 c/amsfonts/cm/cmtt8.pfb>
-Output written on paper.pdf (15 pages, 5214455 bytes).
+Output written on paper.pdf (14 pages, 5153663 bytes).
 PDF statistics:
- 506 PDF objects out of 1000 (max. 8388607)
- 369 compressed objects within 4 object streams
+ 498 PDF objects out of 1000 (max. 8388607)
+ 370 compressed objects within 4 object streams
  120 named destinations out of 1000 (max. 500000)
- 366 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 346 words of extra memory for PDF output out of 10000 (max. 10000000)
 
