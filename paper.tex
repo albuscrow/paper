@@ -69,6 +69,9 @@ volume. Users first edit the shape of the intermediate space; then, the space de
 object, whereas the topological connectivity of the object remains unchanged. There are many successive studies
 regarding FFD. Most of these studies focus on improving the interactive means of FFD \cite{Coquillart90, Hui02,
 MacCracken96, McDonnel07, Xu13}. Gain and Bechmann~\cite{Gain08} provided a detailed survey of these methods.}
+\textcolor{green}{
+    FFD is an very intuitive method used to deform model or animate soft object. It was first proposed by Sederberg and Parry \cite{Sederberg86} and have inspired many researchers to proposed a series of methods base on the FFD. Gain and Bechmann~\cite{Gain08} provided a detailed survey of these methods. The main idea of FFD is embedding the model into an intermediate space like B\'ezier volume. The intermediate space can be edited by user, then it will transfer the deformation to the embedded model. While the topological connectivity of the model can be reserved during the deformation. However, most of the existing methods focus on the interactive means of FFD but not the quality of the deformation result.
+}
 
 \textcolor{red}{Traditional FFD and its extensions deform the sampled vertices of the model. Thus, the quality of the deformation result
 depends on the sampling density of the vertex. As a solution to the sampling problem, adaptive upsampling approaches
@@ -79,6 +82,9 @@ was proposed by Feng et al.~\cite{Feng98, Feng02, Feng00}, is an alternative app
 However, it is computationally intensive, and it also consumes considerable bandwidth, i.e., transferring a large amount
 of data from the CPU to the GPU after the intensive computations are performed in the CPU. Thus, the algorithms are not
 interactive or performed in real time in practical applications.}
+
+\textcolor{green}{
+}
 
 \textcolor{red}{In the recent years, GPUs have been widely adopted for FFD implementations due to their tremendous parallel computing
 power. Chua et al.~\cite{Chua00} proposed an OpenGL-oriented hardware evaluator sub-system to accelerate FFD
