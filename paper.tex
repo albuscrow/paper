@@ -84,6 +84,7 @@ of data from the CPU to the GPU after the intensive computations are performed i
 interactive or performed in real time in practical applications.}
 
 \textcolor{green}{
+    Traditional FFD deform the sampled vertices of the model as well as its extensions. Therefore, the quality of the deformation result depends on the sampling density of the vertex. To solve the sampling problem, adaptive upsampling approaches \cite{Gain99, Griessmair89, Parry86} are proposed which are more efficient than the naive uniform upsampling approach on CPU. However, they cannot handle certain special or pathological cases well. What's more, it is hard to be ported to GPU. Accurate FFD, proposed by Feng et al.~\cite{Feng98, Feng02, Feng00}, is another method to archive high quality of deformed model. But it is not efficient due to intensive computation and also comsumes considerable bandwidth. Thus, the algorithms are not interactive or performed in real time in pratical applications.
 }
 
 \textcolor{red}{In the recent years, GPUs have been widely adopted for FFD implementations due to their tremendous parallel computing
@@ -94,6 +95,10 @@ FFD using the NVIDIA CG language. Jung et al.~\cite{Jung11} achieved the same go
 the X3D system. Hahmann et al.~\cite{Hahmann12} proposed a GPU-based, volume-preserving FFD. They employed the
 multilinear property of volume constraint and derived an explicit solution. The GPU acceleration component implemented
 by CUDA is 6.5-times faster than its CPU counterpart.}
+
+\textcolor{green} {
+    To obtain tremendous parallel computing power, lots of FFD implementations implemented via GPU. Chua et al. \cite{Chua00} proposed an OpenGL-oriented hardware evaluator sub-system specially designed for FFD evaluations. However, GPU parallel computing is developing in the opposite direction. GPU have evolved into general-purpose many-core processors. There're many implementations(\cite{Schein06}, \cite{Jung11}, \cite{Hahmann12}) accelerate FFD via GPGPU. The GPU acceleration component implemented by CUDA is 6.5-times faster thans its CPU counterpart.
+}
 
 \textcolor{red}{Cui and Feng (2013, 2014) proposed GPU-based accurate FFD of polygonal objects, the results of which are
 represented in terms of trimmed tensor product Bézier patches or triangular Bézier patches. They are sufficiently
