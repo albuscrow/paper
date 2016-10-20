@@ -48,9 +48,9 @@ smooth FFD\sep sharp feature preserving\sep GPU\sep OpenGL compute shader\sep no
 \end{frontmatter}
 
 \section{Introduction}
-\textcolor{red}{Free-form deformation (FFD) is a prevalent shape manipulation and shape animation method in computer graphics and geometric modeling~\cite{Sederberg86}. Classic FFD is conducted on the sampled points of the geometric model. However, the approach tends to produce an aliased deformation result when using a low sampling density.}
+%\textcolor{red}{Free-form deformation (FFD) is a prevalent shape manipulation and shape animation method in computer graphics and geometric modeling~\cite{Sederberg86}. Classic FFD is conducted on the sampled points of the geometric model. However, the approach tends to produce an aliased deformation result when using a low sampling density.}
 
-\textcolor{green}{Free-form deformation (FFD\cite{Sederberg86}), as well as many kinds of variants, is useful and widely used whether in academia or in industry when refer to computer graphics and geometric modeling. However, Classic FFD is very simple and efficient but also has many limitation, it is conducted on the sampled points of the geometric model and the approach tends to produce an aliased deformation result when using a low sampling density.}
+Free-form deformation (FFD\cite{Sederberg86}), as well as many kinds of variants, is useful and widely used whether in academia or in industry when refer to computer graphics and geometric modeling. However, Classic FFD is very simple and efficient but also has many limitation, it is conducted on the sampled points of the geometric model and the approach tends to produce an aliased deformation result when using a low sampling density.
 
 As an alternative, smooth FFD ~\cite{Cui13, Cui14, Cui15} which is on the foundation of accurate FFD (Feng et al., 1998, 2002; Feng and Peng, 2000) deforms the planar polygons as a set of triangular Bézier patches based on the functional composition of Bernstein polynomials (DeRose, 1988; DeRose et al., 1993). The deformation result is smooth and sharp feature awareness. However, In the pre-processing phase, the pathological sub-triangles producted by clip process will worsen efficiency and robustness. So we propose another subdivision approach to get more regular sub-triangles with the cost of a little increase of error. On the other hand, the framework's applicability and generality are bad due to the limit of CUDA. In order to address it, We implement our compute-intensive task with OpenGL compute shader.
 The main contributions of the paper are summarized as follows:
@@ -63,47 +63,49 @@ What's more, graphics applications is move to mobile platform due to the develop
 
 \section{Related Work}\label{sec:related}
 
-\textcolor{red}{FFD, which was first proposed by Sederberg and Parry \cite{Sederberg86}, is an intuitive model manipulation and soft
-object animation method. The main concept of FFD is to embed the object into an intermediate space, e.g., a B\'ezier
-volume. Users first edit the shape of the intermediate space; then, the space deformation is transferred to the embedded
-object, whereas the topological connectivity of the object remains unchanged. There are many successive studies
-regarding FFD. Most of these studies focus on improving the interactive means of FFD \cite{Coquillart90, Hui02,
-MacCracken96, McDonnel07, Xu13}. Gain and Bechmann~\cite{Gain08} provided a detailed survey of these methods.}
-\textcolor{green}{
-    FFD is an very intuitive method used to deform model or animate soft object. It was first proposed by Sederberg and Parry \cite{Sederberg86} and have inspired many researchers to proposed a series of methods base on the FFD. Gain and Bechmann~\cite{Gain08} provided a detailed survey of these methods. The main idea of FFD is embedding the model into an intermediate space like B\'ezier volume. The intermediate space can be edited by user, then it will transfer the deformation to the embedded model. While the topological connectivity of the model can be reserved during the deformation. However, most of the existing methods focus on the interactive means of FFD but not the quality of the deformation result.
-}
+%\textcolor{red}{FFD, which was first proposed by Sederberg and Parry \cite{Sederberg86}, is an intuitive model manipulation and soft
+%object animation method. The main concept of FFD is to embed the object into an intermediate space, e.g., a B\'ezier
+%volume. Users first edit the shape of the intermediate space; then, the space deformation is transferred to the embedded
+%object, whereas the topological connectivity of the object remains unchanged. There are many successive studies
+%regarding FFD. Most of these studies focus on improving the interactive means of FFD \cite{Coquillart90, Hui02,
+%MacCracken96, McDonnel07, Xu13}. Gain and Bechmann~\cite{Gain08} provided a detailed survey of these methods.}
 
-\textcolor{red}{Traditional FFD and its extensions deform the sampled vertices of the model. Thus, the quality of the deformation result
-depends on the sampling density of the vertex. As a solution to the sampling problem, adaptive upsampling approaches
-\cite{Gain99, Griessmair89, Parry86} are more efficient than the naive uniform upsampling approach on CPU. The adaptive
-upsampling approaches consider the polygon size or surface curvature and upsample the model if necessary. But they
-cannot handle certain special or pathological cases well, and are difficult to be ported on GPU. Accurate FFD, which
-was proposed by Feng et al.~\cite{Feng98, Feng02, Feng00}, is an alternative approach to solving the sampling problem.
-However, it is computationally intensive, and it also consumes considerable bandwidth, i.e., transferring a large amount
-of data from the CPU to the GPU after the intensive computations are performed in the CPU. Thus, the algorithms are not
-interactive or performed in real time in practical applications.}
+FFD is an very intuitive method used to deform model or animate soft object. It was first proposed by Sederberg and Parry \cite{Sederberg86} and have inspired many researchers to proposed a series of methods base on the FFD. Gain and Bechmann~\cite{Gain08} provided a detailed survey of these methods. The main idea of FFD is embedding the model into an intermediate space like B\'ezier volume. The intermediate space can be edited by user, then it will transfer the deformation to the embedded model. While the topological connectivity of the model can be reserved during the deformation. However, most of the existing methods focus on the interactive means of FFD but not the quality of the deformation result.
 
-\textcolor{green}{
-    Traditional FFD deform the sampled vertices of the model as well as its extensions. Therefore, the quality of the deformation result depends on the sampling density of the vertex. To solve the sampling problem, adaptive upsampling approaches \cite{Gain99, Griessmair89, Parry86} are proposed which are more efficient than the naive uniform upsampling approach on CPU. However, they cannot handle certain special or pathological cases well. What's more, it is hard to be ported to GPU. Accurate FFD, proposed by Feng et al.~\cite{Feng98, Feng02, Feng00}, is another method to archive high quality of deformed model. But it is not efficient due to intensive computation and also comsumes considerable bandwidth. Thus, the algorithms are not interactive or performed in real time in pratical applications.
-}
+%\textcolor{red}{Traditional FFD and its extensions deform the sampled vertices of the model. Thus, the quality of the deformation result
+%depends on the sampling density of the vertex. As a solution to the sampling problem, adaptive upsampling approaches
+%\cite{Gain99, Griessmair89, Parry86} are more efficient than the naive uniform upsampling approach on CPU. The adaptive
+%upsampling approaches consider the polygon size or surface curvature and upsample the model if necessary. But they
+%cannot handle certain special or pathological cases well, and are difficult to be ported on GPU. Accurate FFD, which
+%was proposed by Feng et al.~\cite{Feng98, Feng02, Feng00}, is an alternative approach to solving the sampling problem.
+%However, it is computationally intensive, and it also consumes considerable bandwidth, i.e., transferring a large amount
+%of data from the CPU to the GPU after the intensive computations are performed in the CPU. Thus, the algorithms are not
+%interactive or performed in real time in practical applications.}
 
-\textcolor{red}{In the recent years, GPUs have been widely adopted for FFD implementations due to their tremendous parallel computing
-power. Chua et al.~\cite{Chua00} proposed an OpenGL-oriented hardware evaluator sub-system to accelerate FFD
-evaluations. However, none of the GPU vendors integrate this type of dedicated sub-system into their GPUs. In contrast,
-GPUs have evolved into general-purpose many-core processors. Schein et al.~\cite{Schein06} implemented a GPU-accelerated
-FFD using the NVIDIA CG language. Jung et al.~\cite{Jung11} achieved the same goal using NVIDIA CUDA and embedded it to
-the X3D system. Hahmann et al.~\cite{Hahmann12} proposed a GPU-based, volume-preserving FFD. They employed the
-multilinear property of volume constraint and derived an explicit solution. The GPU acceleration component implemented
-by CUDA is 6.5-times faster than its CPU counterpart.}
+Traditional FFD deform the sampled vertices of the model as well as its extensions. Therefore, the quality of the deformation result depends on the sampling density of the vertex. To solve the sampling problem, adaptive upsampling approaches \cite{Gain99, Griessmair89, Parry86} are proposed which are more efficient than the naive uniform upsampling approach on CPU. However, they cannot handle certain special or pathological cases well. What's more, it is hard to be ported to GPU. Accurate FFD, proposed by Feng et al.\cite{Feng98, Feng02, Feng00}, is another method to archive high quality of deformed model. But it is not efficient due to intensive computation and also comsumes considerable bandwidth. Thus, the algorithms are not interactive or performed in real time in pratical applications.
 
-\textcolor{green} {
-    To obtain tremendous parallel computing power, lots of FFD implementations implemented via GPU. Chua et al. \cite{Chua00} proposed an OpenGL-oriented hardware evaluator sub-system specially designed for FFD evaluations. However, GPU parallel computing is developing in the opposite direction. GPU have evolved into general-purpose many-core processors. There're many implementations(\cite{Schein06}, \cite{Jung11}, \cite{Hahmann12}) accelerate FFD via GPGPU. The GPU acceleration component implemented by CUDA is 6.5-times faster thans its CPU counterpart.
-}
+%\textcolor{red}{In the recent years, GPUs have been widely adopted for FFD implementations due to their tremendous parallel computing
+%power. Chua et al.~\cite{Chua00} proposed an OpenGL-oriented hardware evaluator sub-system to accelerate FFD
+%evaluations. However, none of the GPU vendors integrate this type of dedicated sub-system into their GPUs. In contrast,
+%GPUs have evolved into general-purpose many-core processors. Schein et al.~\cite{Schein06} implemented a GPU-accelerated
+%FFD using the NVIDIA CG language. Jung et al.~\cite{Jung11} achieved the same goal using NVIDIA CUDA and embedded it to
+%the X3D system. Hahmann et al.~\cite{Hahmann12} proposed a GPU-based, volume-preserving FFD. They employed the
+%multilinear property of volume constraint and derived an explicit solution. The GPU acceleration component implemented
+%by CUDA is 6.5-times faster than its CPU counterpart.}
 
-\textcolor{red}{Cui and Feng (2013, 2014) proposed GPU-based accurate FFD of polygonal objects, the results of which are
-represented in terms of trimmed tensor product Bézier patches or triangular Bézier patches. They are sufficiently
-efficient to meet the real-time or interactive demands of large-scale models. However, the deformation is only performed
-on the linear geometry, without considering the normal of the model.}
+To obtain tremendous parallel computing power, lots of FFD implementations implemented via GPU. Chua et al. \cite{Chua00} proposed an OpenGL-oriented hardware evaluator sub-system specially designed for FFD evaluations. However, GPU parallel computing is developing in the opposite direction. GPU have evolved into general-purpose many-core processors. There're many implementations(\cite{Schein06}, \cite{Jung11}, \cite{Hahmann12}) accelerate FFD via GPGPU. The GPU acceleration component implemented by CUDA is 6.5-times faster thans its CPU counterpart.
+
+%\textcolor{red}{Cui and Feng (2013, 2014) proposed GPU-based accurate FFD of polygonal objects, the results of which are
+%represented in terms of trimmed tensor product Bézier patches or triangular Bézier patches. They are sufficiently
+%efficient to meet the real-time or interactive demands of large-scale models. However, the deformation is only performed
+%on the linear geometry, without considering the normal of the model.}
+
+An accurate FFD of polygonal objects based on GPU is proposed by Cui and Feng(2013, 2014).
+Its result is in terms of trimmed tensor product Bézier patches or triangular Bézier patches.
+They are efficient enough to meet the real-time or interactive demands of large-scale models.
+However, the deformation is only performed on the geometry.
+Without considering the normal of the model, the shading effect of the deformed model is unsmooth.
+
 Smooth FFD (Cui and Feng 2015 ) is proposed by Cui and Feng (2015), which adjust the deformed the results of above work according to the normal information of the model so that to obtain a smooth free-form deformation with visually plausible smooth geometry and shading. However, Smooth FFD will generate degenerative triangles and narrow triangle which will do damage accuracy and efficiency in many areas such as CAD, PDE-based computation and so on. And when it comes to generality, Smooth FFD is implemented by CUDA which will limit their whole framework to NVIDIA hardware.
 
 On the other hand, there're more and more graphic applications on the mobile platform. Mobile platform will develop so further that it not only show the 3D things, but also has the demand to edit the 3D model.\cite{mobile1}, \cite{mobile2} already do some work on mobile platform. We want to port a variant FFD method to mobile phone.
@@ -293,7 +295,6 @@ The deformation results are shown in Figure \ref{fig:ship} and \ref{fig:rabbit}.
 \end{figure}
 
 These figures illustrate that the results obtained with smooth FFD and improved smooth FFD are almost the same. We can not tell each other with eyes.
-\textcolor{red}{The highlight is smooth because the normals that we use are independent of the model geometry. The smooth geometry and sharp features benefit from our geometry and normal adjustment method.}
 
 \subsection{Comparison of efficiencies}
 
