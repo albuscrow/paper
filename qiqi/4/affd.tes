@@ -1,0 +1,118 @@
+#version 440
+
+layout(triangles, equal_spacing, ccw) in;
+
+uniform mat4 MVMatrix, PMatrix;
+uniform mat3 NormalMatrix;
+uniform float factorial_1[4];
+
+in vec3 tc_te_ctrlPoint[], tc_te_ctrlPointN[];
+in vec2 tc_te_texCoord2D[];
+
+out vec2 TexCoord2D;
+out vec3 TexCoord3D, ecPosition, tnorm;
+
+//out vec3 bary;// 调试
+
+float u[4] = {1.0, gl_TessCoord[0]};
+float v[4] = {1.0, gl_TessCoord[1]};
+float w[4] = {1.0, gl_TessCoord[2]};
+
+float B(int i, int j, int k, float f)
+{
+	return f * u[i] * v[j] * w[k];
+	//return f * pow(u, i) * pow(v, j) * pow(w, k);
+}
+
+int frac(int a)
+{
+	if (a == 0)
+		return 1;
+	int result = 1;
+	for (int i = 2; i <= a; ++i)
+		result *= i;
+	return result;
+}
+
+float power(float a, int x)
+{
+	if (x == 0)
+		return 1.0;
+	float result = 1.0;
+	for (int i = 0; i < x; ++i)
+		result *= a;
+	return result;
+}
+
+void main()
+{
+	for (int i = 2; i <= 3; ++i)
+	{
+		u[i] = u[i - 1] * gl_TessCoord[0];
+		v[i] = v[i - 1] * gl_TessCoord[1];
+		w[i] = w[i - 1] * gl_TessCoord[2];
+	}
+
+	vec3 value = vec3(0.0, 0.0, 0.0), value_n = vec3(0.0, 0.0, 0.0);
+	int counter = 0;
+
+	//********************************************************
+	//for (int i = 3; i >= 0; --i)
+	//{
+		//vec3 temp_value = vec3(0.0, 0.0, 0.0);
+		//vec3 temp_value_n = vec3(0.0, 0.0, 0.0);
+		//for (int j = 3 - i; j >= 0; --j)
+		//{
+			//int k = 3 - i - j;
+			//float f = factorial_1[j] * factorial_1[k];
+			//temp_value   += B(i, j, k, f) * tc_te_ctrlPoint[counter];
+			//temp_value_n += B(i, j, k, f) * tc_te_ctrlPointN[counter++];
+		//}
+		//temp_value *= factorial_1[i];
+		//temp_value_n *= factorial_1[i];
+
+		//value += temp_value;
+		//value_n += temp_value_n;
+	//}
+
+	//value *= 6;		//value *= factorial[3];
+	////value_n *= 6;		//value_n *= factorial[3];
+
+	//********************************************************
+	for (int i = 3; i >= 0; --i)
+	{
+		//vec3 temp_value = vec3(0.0, 0.0, 0.0);
+		//vec3 temp_value_n = vec3(0.0, 0.0, 0.0);
+		for (int j = 3 - i; j >= 0; --j)
+		{
+			int k = 3 - i - j;
+			//float f = factorial_1[j] * factorial_1[k];
+			//temp_value   += B(i, j, k, f) * tc_te_ctrlPoint[counter];
+			//temp_value_n += B(i, j, k, f) * tc_te_ctrlPointN[counter++];
+			value += 6.0 / frac(i) / frac(j) / frac(k) * tc_te_ctrlPoint[counter] *
+				power(gl_TessCoord[0], i) * power(gl_TessCoord[1], j) * power(gl_TessCoord[2], k);
+			value_n += 6.0 / frac(i) / frac(j) / frac(k) * tc_te_ctrlPointN[counter++] *
+				power(gl_TessCoord[0], i) * power(gl_TessCoord[1], j) * power(gl_TessCoord[2], k);
+		}
+		//temp_value *= factorial_1[i];
+		//temp_value_n *= factorial_1[i];
+
+		//value += temp_value;
+		//value_n += temp_value_n;
+	}
+	//********************************************************
+
+	ecPosition = vec3(MVMatrix * vec4(value, 1.0));
+	gl_Position = PMatrix * MVMatrix * vec4(value, 1.0);
+	tnorm = normalize(NormalMatrix * value_n);
+
+	vec2 t0 = gl_TessCoord.x * tc_te_texCoord2D[0];
+	vec2 t1 = gl_TessCoord.y * tc_te_texCoord2D[1];
+	vec2 t2 = gl_TessCoord.z * tc_te_texCoord2D[2];
+	TexCoord2D = t0 + t1 + t2;
+
+	TexCoord3D = vec3(1.0f, 1.0f, 1.0f);
+
+
+	//bary = gl_TessCoord;// 调试
+}

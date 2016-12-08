@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016/Arch Linux) (preloaded format=pdflatex 2016.8.23)  20 OCT 2016 15:16
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016/Arch Linux) (preloaded format=pdflatex 2016.8.23)  21 OCT 2016 14:40
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -388,6 +388,11 @@ File: color.cfg 2016/01/02 v1.6 sample color configuration
 Package color Info: Driver file: pdftex.def on input line 147.
 )
 (/usr/share/texmf-dist/tex/latex/multirow/multirow.sty
+Package: multirow 2016/10/11 v2.1 Span multiple rows of a table
+\multirow@colwidth=\skip56
+\multirow@cnta=\count136
+\multirow@cntb=\count137
+\multirow@dima=\skip57
 \bigstrutjot=\dimen145
 ) (./paper.aux
 
@@ -415,16 +420,16 @@ LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 25.
 LaTeX Font Info:    ... okay on input line 25.
  (/usr/share/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count136
+\scratchcounter=\count138
 \scratchdimen=\dimen146
 \scratchbox=\box34
-\nofMPsegments=\count137
-\nofMParguments=\count138
+\nofMPsegments=\count139
+\nofMParguments=\count140
 \everyMPshowfont=\toks26
-\MPscratchCnt=\count139
+\MPscratchCnt=\count141
 \MPscratchDim=\dimen147
-\MPnumerator=\count140
-\makeMPintoPDFobject=\count141
+\MPnumerator=\count142
+\makeMPintoPDFobject=\count143
 \everyMPtoPDFconversion=\toks27
 ) (/usr/share/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
 Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
@@ -487,7 +492,7 @@ Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
 (/usr/share/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
 Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 )
-\c@section@level=\count142
+\c@section@level=\count144
 )
 LaTeX Info: Redefining \ref on input line 25.
 LaTeX Info: Redefining \pageref on input line 25.
@@ -993,10 +998,10 @@ LaTeX Warning: There were multiply-defined labels.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 499.
  ) 
 Here is how much of TeX's memory you used:
- 9117 strings out of 493013
- 133659 string characters out of 6139317
- 237571 words of memory out of 5000000
- 12344 multiletter control sequences out of 15000+600000
+ 9155 strings out of 493013
+ 134161 string characters out of 6139317
+ 237888 words of memory out of 5000000
+ 12382 multiletter control sequences out of 15000+600000
  17762 words of font info for 69 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  44i,12n,55p,1118b,507s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -1017,7 +1022,7 @@ pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share
 /texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texmf-dist/fo
 nts/type1/public/amsfonts/cm/cmti8.pfb></usr/share/texmf-dist/fonts/type1/publi
 c/amsfonts/cm/cmtt8.pfb>
-Output written on paper.pdf (14 pages, 5152162 bytes).
+Output written on paper.pdf (14 pages, 5152161 bytes).
 PDF statistics:
  490 PDF objects out of 1000 (max. 8388607)
  362 compressed objects within 4 object streams

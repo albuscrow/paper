@@ -1,0 +1,48 @@
+#version 440
+
+layout(vertices = 10) out;
+
+//uniform float TessLevelInner;
+//uniform float TessLevelOuter;
+
+in vec3 v_tc_ctrlPoint[], v_tc_ctrlPointN[];
+in vec2 v_tc_texCoord2D[];
+
+out vec3 tc_te_ctrlPoint[], tc_te_ctrlPointN[];
+out vec2 tc_te_texCoord2D[];
+
+void main()
+{
+	tc_te_ctrlPoint[gl_InvocationID] = v_tc_ctrlPoint[gl_InvocationID];
+	tc_te_ctrlPointN[gl_InvocationID] = v_tc_ctrlPointN[gl_InvocationID];
+	tc_te_texCoord2D[gl_InvocationID] = v_tc_texCoord2D[gl_InvocationID];
+
+	float l0 = length(tc_te_ctrlPoint[6] - tc_te_ctrlPoint[7]) +
+			   length(tc_te_ctrlPoint[7] - tc_te_ctrlPoint[8]) +
+			   length(tc_te_ctrlPoint[8] - tc_te_ctrlPoint[9]);
+	float l1 = length(tc_te_ctrlPoint[0] - tc_te_ctrlPoint[2]) +
+			   length(tc_te_ctrlPoint[2] - tc_te_ctrlPoint[5]) +
+			   length(tc_te_ctrlPoint[5] - tc_te_ctrlPoint[9]);
+	float l2 = length(tc_te_ctrlPoint[0] - tc_te_ctrlPoint[1]) +
+			   length(tc_te_ctrlPoint[1] - tc_te_ctrlPoint[3]) +
+			   length(tc_te_ctrlPoint[3] - tc_te_ctrlPoint[6]);
+	// 按照我屏幕上载入立方体模型的大小以及平时的细分程度，可以得到一个简单的对应关系：
+	// 长度1<=>300像素<=>15段，所以下面按照这个比例进行设定
+	//const float segment_count = 15.0;
+	const float segment_count = 50.0;
+	gl_TessLevelOuter[0] = segment_count * l0;
+	gl_TessLevelOuter[1] = segment_count * l1;
+	gl_TessLevelOuter[2] = segment_count * l2;
+
+	float l_max = l0;
+	if (l_max < l1) l_max = l1;
+	if (l_max < l2) l_max = l2;
+	gl_TessLevelInner[0] = segment_count * l_max;
+
+
+	// 只分一段
+	//gl_TessLevelOuter[0] = 1;
+	//gl_TessLevelOuter[1] = 1;
+	//gl_TessLevelOuter[2] = 1;
+	//gl_TessLevelInner[0] = 1;
+}

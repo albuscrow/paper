@@ -1,0 +1,160 @@
+         
+
+                --- ALIAS IGES PREPROCESSOR REPORT ---
+
+
+Translation summary of file:
+
+C:\aw\Administrator\Alias\user_data\demo\wire\Teapot_Non_Degnerate.iges
+
+
+Comments
+********
+
+ Alias DesignStudio for Windows version 10.0 IGES version 4.0           
+
+
+System Information
+*******************
+
+                       Sending System:  Alias DesignStudio for Windows V10.0    
+                 Preprocessor Version:  10.0                                    
+                         IGES Version:  4.0                                     
+                        Target System:  Default                                 
+
+
+Product Information
+*******************
+
+               Product ID from Sender:  Unknown                                 
+              Product ID for Receiver:  Unknown                                 
+                    Model Space Scale:  1.000000
+                                Units:  CM                                      
+  Number of Line Thickness Gradations:  1
+               Width of Thickest Line:  0.010000 CM
+                  Time File Generated:  030326.111725                           
+                Model Space Tolerance:  0.010000 CM
+ Approximate Maximum Coordinate Value:  1.41
+               Drafting Standard Code:  0
+                               Author:  Administrator                           
+                Author's Organization:  Unknown                                 
+
+
+Configuration Parameters
+************************
+
+ Parameter                              Value
+ ---------                              -----
+
+ IGES_OUT_VERSION                       6 (user over-ride)
+ IGES Version Number                    IGES Version 4.0
+
+ IGES_OUT_UNITS                         3
+ Output Units                           See Product Information
+
+ IGES_OUT_SPLINE_TYPE                   0
+ Curve/Surface Spline Type              Rational B-Spline Curve/Surface (126/128)
+
+ IGES_OUT_OUTPUT_STYLE                  0
+ Surface Output Style                   Surfaces preserved
+
+ IGES_OUT_POLY                          0
+ Linearize spline geometry              NO
+
+ IGES_OUT_POLYLINE_TYPE                 0
+ Linear Spline Curve Type               Copious Data (106)
+
+ IGES_OUT_SURFACE_TYPE                  0
+ Trimmed Surface Type                   Trimmed Parametric Surface (144)
+
+ IGES_OUT_PRECISION                     12
+ Real Number Precision                  Output 12 digits to right of decimal
+
+ IGES_OUT_MAX_SPANS                     0
+ Surface Patch Limit                    NO LIMIT
+
+ IGES_OUT_MAX_TRIM                      0
+ Trimmed Surface Patch Limit            NO LIMIT
+
+ IGES_OUT_2D_TRIM                       0
+ Trimmed Surface Trim Curves            Both model and parameter space curves
+
+ IGES_OUT_2D_BOUNDARY                   1
+ Bounded Surface Boundaries             N/A for Trimmed Surface (144)
+
+ IGES_OUT_INSTANCE_COPIES               1
+ Instanced Geometry                     Duplicated/transformed
+
+ IGES_OUT_MONOTONE_2D_TRIM              0
+ Monotone Parameter Space Trim Curves   NO
+
+ IGES_OUT_CUBIC_2D_TRIM                 0
+ Degree of Parameter Space Trim Curves  Quadratic and Linear
+
+ IGES_OUT_LINEAR_2D_TRIM                0
+ Linear Parameter Space Trim Curve Type Line (110)
+
+ IGES_OUT_CONS_PREF                     1
+ Curve on Surface Preference            Parameter space preferred
+
+ IGES_OUT_DEGEN_TRIM                    2
+ Degenerate Model Space Trim Curves     May exist
+
+ IGES_OUT_REBUILD_GEOMETRY              0
+ Rebuild high-degree/rational splines   NO
+
+ IGES_OUT_ANALYTICS                     1
+ Output IGES Analytic Entities          YES
+
+ IGES_OUT_SURF_AS_TRIM                  0
+ All Surfaces As Trimmed/Bounded        NO
+
+ IGES_OUT_BS_TRIM                       0
+ Trim/Boundary Curve Type               Rational B-Spline Curve (126)
+
+ IGES_OUT_PAR_TRIM                      0
+ Trim/Boundary Curve Type               N/A
+
+ IGES_OUT_FILE_EXT                      .iges
+ File Extension                         .iges
+
+
+
+Alias Entities Processed
+************************
+
+ Alias Entity Name            Count
+ -----------------            -----
+ B-Spline Surface                36
+ B-Spline Curve                   5
+ ----------------------------------
+ Total:                          41
+
+
+
+Alias Entities Skipped
+**********************
+
+ Alias Entity Name            Count  Error Description
+ -----------------            -----  -----------------
+ Light                            2  Entity not supported  
+ Camera                          12  Entity not supported  
+ -----------------------------------------------------
+ Total:                          14
+
+
+
+IGES Entities Created
+*********************
+
+   Entity      Form   Description                  Count
+ Type Number  Number
+ -----------  ------  -----------                  -----
+     126         0    Rational B-Spline Curve          5
+     128         0    Rational B-Spline Surface       36
+ -------------------------------------------------------
+Total:                                                41
+
+Elapsed time (hh:mm:ss): 00:00:00
+
+***************************** End of Log File *********************************

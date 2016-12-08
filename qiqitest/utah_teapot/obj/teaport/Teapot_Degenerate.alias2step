@@ -1,0 +1,24 @@
+
+
+	Alias Studio STEP Export File
+Writing began at: Wed Mar 26 14:44:26 2003
+
+
+
+Schema : AUTOMOTIVE_DESIGN { 1 2 10303 214 0 1 1 1 }
+
+
+Errors Processing Stage: Stage
+
+There were no errors in processing
+
+
+---------------------------------------------------------------------
+Summary Of Entities Processed
+
+
+B-Spline Surface                     : 36
+B-Spline Curve                       : 1
+
+
+Total Processed Entities 37
